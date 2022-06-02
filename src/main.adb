@@ -40,7 +40,9 @@ begin
         end loop;
     end if;
     
-    ast_file := Parse(To_String(input_file));
+    if not output_lex then
+        ast_file := Parse(To_String(input_file));
+    end if;
 
     -- Print as dictated
     if output_lex then

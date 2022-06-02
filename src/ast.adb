@@ -44,6 +44,16 @@ begin
     stmt.expr := expr;
 end Set_Expression;
 
+procedure Set_Name(stmt : in out AstStatement; name : Unbounded_String) is
+begin
+    stmt.name := name;
+end Set_Name;
+
+procedure Set_Data_Type(stmt : in out AstStatement; data_type : DataType) is
+begin
+    stmt.data_type := data_type;
+end Set_Data_Type;
+
 procedure Add_Statement(block : in out AstBlock; stmt : AstStatement) is
 begin
     block.statements.Append(stmt);
@@ -77,10 +87,11 @@ procedure Print_Ast(file : AstFile) is
             when AST_Int => Put(expr.int_value, 0);
             when AST_Id => Put(To_String(expr.string_value));
             
-            when AST_Add | AST_Sub | AST_Mul | AST_Div =>
+            when AST_Assign | AST_Add | AST_Sub | AST_Mul | AST_Div =>
                 Put("(");
                 Print(expr.lval);
-                if expr.ast_type = AST_Add then Put(" + ");
+                if expr.ast_type = AST_Assign then Put(" := ");
+                elsif expr.ast_type = AST_Add then Put(" + ");
                 elsif expr.ast_type = AST_Sub then Put(" - ");
                 elsif expr.ast_type = AST_Mul then Put(" * ");
                 elsif expr.ast_type = AST_Div then Put(" / ");
@@ -94,7 +105,7 @@ procedure Print_Ast(file : AstFile) is
     
     procedure Print(stmt : AstStatement) is
     begin
-        Put(AstType'Image(stmt.ast_type) & " ");
+        Put(AstType'Image(stmt.ast_type) & " " & To_String(stmt.name) & " " & DataType'Image(stmt.data_type) & " ");
         if stmt.expr.ast_type /= AST_None then
             Print(stmt.expr);
         end if;
@@ -150,6 +161,7 @@ function Create_Ast_Statement(ast_type : AstType) return AstStatement is
     stmt : AstStatement;
 begin
     stmt.ast_type := ast_type;
+    stmt.data_type := Void;
     return stmt;
 end Create_Ast_Statement;
 

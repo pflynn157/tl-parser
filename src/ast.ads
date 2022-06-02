@@ -10,10 +10,12 @@ package AST is
         AST_None,
         
         -- Statements
+        AST_Var,
         AST_Return,
         
         -- Expressions
         -- Operators
+        AST_Assign,
         AST_Add,
         AST_Sub,
         AST_Mul,
@@ -22,6 +24,16 @@ package AST is
         -- Literals
         AST_Id,
         AST_Int
+    );
+    
+    type DataType is (
+        Void,
+        I8, U8,
+        I16, U16,
+        I32, U32,
+        I64, U64,
+        Char, Str,
+        Bool
     );
 
     --
@@ -43,6 +55,8 @@ package AST is
     type AstStatement is record
         ast_type : AstType := AST_None;
         expr : AstExpression;
+        data_type : DataType := Void;
+        name : Unbounded_String;
     end record;
     
     package AstStmtVector is new Ada.Containers.Vectors
@@ -82,6 +96,8 @@ package AST is
     function Has_Expression(stmt : AstStatement) return boolean;
     procedure Create_Binary_Op(op : in out AstExpression; lval, rval : AstExpression);
     procedure Set_Expression(stmt : in out AstStatement; expr : AstExpression);
+    procedure Set_Name(stmt : in out AstStatement; name : Unbounded_String);
+    procedure Set_Data_Type(stmt : in out AstStatement; data_type : DataType);
     procedure Add_Statement(block : in out AstBlock; stmt : AstStatement);
     procedure Add_Statement(func : in out AstFunction; stmt : AstStatement);
     procedure Add_Function(Self: in out AstFile; ast_func : AstFunction);

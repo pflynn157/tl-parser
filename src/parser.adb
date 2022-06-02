@@ -22,6 +22,7 @@ package AstExprStack is new Ada.Containers.Vectors
 procedure Parse_Function(file : in out AstFile);
 procedure Parse_Block(block : in out AstBlock);
 function Parse_Expression(end_token : TokenType) return AstExpression;
+procedure Parse_Data_Type(data_type : in out DataType);
 
 --
 -- The main section of the AST parser
@@ -92,10 +93,53 @@ procedure Parse_Block(block : in out AstBlock) is
     t : Token;
     stmt : AstStatement;
     expr : AstExpression;
+    
+    -- A helper function for parsing variable declarations
+    procedure Parse_Var_Dec is
+        name : Unbounded_String;
+        data_type : DataType := Void;
+        lval : AstExpression;
+    begin
+        -- Collect variable information and perform basic syntax checks
+        t := Lex_Get_Next;
+        name := t.string_value;
+        if t.token_type /= T_Id then
+            Put_Line("Error: Invalid token in variable declaration: Expected name");
+            Put_Line(TokenType'Image(t.token_type));
+            return;
+        end if;
+        
+        t := Lex_Get_Next;
+        if t.token_type /= T_Colon then
+            Put_Line("Error: Expected colon.");
+            Put_Line(TokenType'Image(t.token_type));
+            return;
+        end if;
+        
+        Parse_Data_Type(data_type);
+        
+        -- Now, parse the expression
+        expr := Parse_Expression(T_SemiColon);
+        
+        lval := Create_Ast_Expression(AST_Id);
+        lval.string_value := name;
+        Create_Binary_Op(expr, lval, expr.rval.all);
+        
+        -- Create the statement
+        stmt := Create_Ast_Statement(AST_Var);
+        Set_Name(stmt, name);
+        Set_Data_Type(stmt, data_type);
+        Set_Expression(stmt, expr);
+        Add_Statement(block, stmt);
+    end Parse_Var_Dec;
+    
+    -- Main Parse body
 begin
     t := Lex_Get_Next;
     while t.token_type /= T_End and t.token_type /= T_Eof loop
         case t.token_type is
+            when T_Var => Parse_Var_Dec;
+        
             when T_Return =>
                 stmt := Create_Ast_Statement(AST_Return);
                 expr := Parse_Expression(T_SemiColon);
@@ -131,8 +175,12 @@ function Parse_Expression(end_token : TokenType) return AstExpression is
             rval := stack.Last_Element;
             stack.Delete_Last;
             
-            lval := stack.Last_Element;
-            stack.Delete_Last;
+            if op.ast_type = AST_Assign then
+                lval := Create_Ast_Expression(AST_None);
+            else
+                lval := stack.Last_Element;
+                stack.Delete_Last;
+            end if;
             
             Create_Binary_Op(op, lval, rval);
             stack.Append(op);
@@ -153,6 +201,7 @@ begin
                 stack.Append(expr);
                 
             -- Operators
+            when T_Assign => op_stack.Append(Create_Ast_Expression(AST_Assign));
             when T_Add => op_stack.Append(Create_Ast_Expression(AST_Add));
             when T_Sub => op_stack.Append(Create_Ast_Expression(AST_Sub));
             when T_Mul => op_stack.Append(Create_Ast_Expression(AST_Mul));
@@ -175,6 +224,36 @@ begin
     
     return stack.Last_Element;
 end Parse_Expression;
+
+--
+-- Parses a data type token from the token stream
+--
+procedure Parse_Data_Type(data_type : in out DataType) is
+    t : Token := Lex_Get_Next;
+begin
+    case t.token_type is
+        when T_I8 => data_type := I8;
+        when T_U8 => data_type := U8;
+        
+        when T_I16 => data_type := I16;
+        when T_U16 => data_type := U16;
+        
+        when T_I32 => data_type := I32;
+        when T_U32 => data_type := U32;
+        
+        when T_I64 => data_type := I64;
+        when T_U64 => data_type := U64;
+        
+        when T_Char => data_type := Char;
+        when T_String => data_type := Str;
+        when T_Bool => data_type := Bool;
+        
+        when others =>
+            Put_Line("Error: Invalid data type.");
+            Put_Line(TokenType'Image(t.token_type));
+            data_type := Void;
+    end case;
+end Parse_Data_Type;
 
 end Parser; -- End body of Parser
 

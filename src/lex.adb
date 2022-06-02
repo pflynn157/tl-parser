@@ -43,7 +43,7 @@ function Lex_Get_Next return Token is
     function Is_Symbol return boolean is
     begin
         case c is
-            when ';' => return true;
+            when ';' | ':' | '=' => return true;
             when '+' | '-' | '*' | '/' => return true;
             
             when others => return false;
@@ -62,6 +62,8 @@ function Lex_Get_Next return Token is
     
     -- A helper function to get the symbol based on the character
     procedure Get_Symbol is
+        c2 : character;
+        eol : boolean;
     begin
         case c is
             when ';' => t.token_type := T_SemiColon;
@@ -69,6 +71,15 @@ function Lex_Get_Next return Token is
             when '-' => t.token_type := T_Sub;
             when '*' => t.token_type := T_Mul;
             when '/' => t.token_type := T_Div;
+            
+            when ':' =>
+                Look_Ahead(F, c2, eol);
+                if c2 = '=' then
+                    Get_Immediate(F, c);
+                    t.token_type := T_Assign;
+                else
+                    t.token_type := T_Colon;
+                end if;
             
             when others => null;
         end case;
@@ -81,6 +92,18 @@ function Lex_Get_Next return Token is
         elsif buffer = "is" then t.token_type := T_Is;
         elsif buffer = "end" then t.token_type := T_End;
         elsif buffer = "return" then t.token_type := T_Return;
+        elsif buffer = "var" then t.token_type := T_Var;
+        elsif buffer = "i8" then t.token_type := T_I8;
+        elsif buffer = "u8" then t.token_type := T_U8;
+        elsif buffer = "i16" then t.token_type := T_I16;
+        elsif buffer = "u16" then t.token_type := T_U16;
+        elsif buffer = "i32" then t.token_type := T_I32;
+        elsif buffer = "u32" then t.token_type := T_U32;
+        elsif buffer = "i64" then t.token_type := T_I64;
+        elsif buffer = "u64" then t.token_type := T_U64;
+        elsif buffer = "char" then t.token_type := T_Char;
+        elsif buffer = "string" then t.token_type := T_String;
+        elsif buffer = "bool" then t.token_type := T_Bool;
         else t.token_type := T_None;
         end if;
     end Get_Keyword;

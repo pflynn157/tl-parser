@@ -9,7 +9,8 @@ package body Unwriter is
 --
 procedure unwrite_block(block : AstBlock);
 procedure unwrite_statement(stmt : AstStatement; indent : integer);
-procedure unwrite_expression(expr : AstExpression);
+procedure unwrite_expression(expr : AstExpression; print_lval : boolean := true);
+procedure unwrite_data_type(data_type : DataType);
 
 --
 -- The entry point of the unwriter
@@ -42,6 +43,12 @@ begin
     for i in 0 .. indent loop Put(" "); end loop;
 
     case stmt.ast_type is
+        when AST_Var =>
+            Put("var " & To_String(stmt.name) & " : ");
+            unwrite_data_type(stmt.data_type);
+            unwrite_expression(stmt.expr, false);
+            Put_Line(";");
+        
         when AST_Return =>
             Put("return");
             if Has_Expression(stmt) then
@@ -57,7 +64,7 @@ end unwrite_statement;
 --
 -- Unwrites an expression
 --
-procedure unwrite_expression(expr : AstExpression) is
+procedure unwrite_expression(expr : AstExpression; print_lval : boolean := true) is
 begin
     case expr.ast_type is
         -- Literals and identifiers
@@ -65,9 +72,13 @@ begin
         when AST_Id => Put(To_String(expr.string_value));
         
         -- Operators
-        when AST_Add | AST_Sub | AST_Mul | AST_Div =>
-            unwrite_expression(expr.lval.all);
+        when AST_Assign |
+             AST_Add | AST_Sub | AST_Mul | AST_Div =>
+            if print_lval then
+                unwrite_expression(expr.lval.all);
+            end if;
             case expr.ast_type is
+                when AST_Assign => Put(" := ");
                 when AST_Add => Put(" + ");
                 when AST_Sub => Put(" - ");
                 when AST_Mul => Put(" * ");
@@ -81,6 +92,32 @@ begin
         when others => null;
     end case;
 end unwrite_expression;
+
+--
+-- Unwrites a data type
+--
+procedure unwrite_data_type(data_type : DataType) is
+begin
+    case data_type is
+        when I8 => Put("i8");
+        when U8 => Put("u8");
+        
+        when I16 => Put("i16");
+        when U16 => Put("u16");
+        
+        when I32 => Put("i32");
+        when U32 => Put("u32");
+        
+        when I64 => Put("i64");
+        when U64 => Put("u64");
+        
+        when Char => Put("char");
+        when Str => Put("string");
+        when Bool => Put("bool");
+        
+        when others => Put("void");
+    end case;
+end unwrite_data_type;
 
 end Unwriter; -- End package
 
