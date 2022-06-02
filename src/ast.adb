@@ -12,7 +12,7 @@ package body Ast is
 --
 function Has_Expression(stmt : AstStatement) return boolean is
 begin
-    if stmt.ast_type = AST_None then
+    if stmt.expr.ast_type = AST_None then
         return false;
     end if;
     return true;

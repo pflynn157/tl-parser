@@ -1,5 +1,6 @@
 with Ada.Text_IO;       use Ada.Text_IO;
 with Ada.Command_Line;  use Ada.Command_Line;
+with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 
 with ast; use ast;
 with parser; use parser;
@@ -22,9 +23,10 @@ procedure Main is
     
     -- Command line control variables
     output_lex, output_ast : boolean := false;
+    input_file : Unbounded_String;
     
     -- The ast file
-    ast_file : AstFile := Parse("first.tl");
+    ast_file : AstFile;
 begin
     if Argument_Count >= 1 then
         for i in 1 .. Argument_Count loop
@@ -32,9 +34,13 @@ begin
                 output_lex := true;
             elsif Argument(i) = "--ast" then
                 output_ast := true;
+            else
+                input_file := To_Unbounded_String(Argument(i));
             end if;
         end loop;
     end if;
+    
+    ast_file := Parse(To_String(input_file));
 
     -- Print as dictated
     if output_lex then
