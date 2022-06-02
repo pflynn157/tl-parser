@@ -84,7 +84,8 @@ begin
         -- Operators
         when AST_Assign |
              AST_Add | AST_Sub | AST_Mul | AST_Div | AST_Mod |
-             AST_And | AST_Or | AST_Xor =>
+             AST_And | AST_Or | AST_Xor |
+             AST_Eq | AST_Ne | AST_Gt | AST_Ge | AST_Lt | AST_Le =>
             if print_lval then
                 unwrite_expression(expr.lval.all);
             end if;
@@ -98,6 +99,13 @@ begin
                 when AST_And => Put(" & ");
                 when AST_Or => Put(" | ");
                 when AST_Xor => Put(" ^ ");
+                
+                when AST_Eq => Put(" = ");
+                when AST_Ne => Put(" != ");
+                when AST_Gt => Put(" > ");
+                when AST_Ge => Put(" >= ");
+                when AST_Lt => Put(" < ");
+                when AST_Le => Put(" <= ");
                 
                 when others => null;
             end case;

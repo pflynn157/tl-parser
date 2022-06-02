@@ -26,6 +26,10 @@ package AST is
         AST_Or,
         AST_Xor,
         
+        AST_Eq, AST_Ne,
+        AST_Gt, AST_Ge,
+        AST_Lt, AST_Le,
+        
         -- Literals
         AST_Id,
         AST_Int,

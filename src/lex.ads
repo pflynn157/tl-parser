@@ -35,6 +35,10 @@ package Lex is
         T_Or,
         T_Xor,
         
+        T_Eq, T_Ne,
+        T_Gt, T_Ge,
+        T_Lt, T_Le,
+        
         -- Literals
         T_Id,
         T_Int,

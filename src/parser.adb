@@ -250,6 +250,13 @@ begin
             when T_Or => op_stack.Append(Create_Ast_Expression(AST_Or));
             when T_Xor => op_stack.Append(Create_Ast_Expression(AST_Xor));
             
+            when T_Eq => op_stack.Append(Create_Ast_Expression(AST_Eq));
+            when T_Ne => op_stack.Append(Create_Ast_Expression(AST_Ne));
+            when T_Gt => op_stack.Append(Create_Ast_Expression(AST_Gt));
+            when T_Ge => op_stack.Append(Create_Ast_Expression(AST_Ge));
+            when T_Lt => op_stack.Append(Create_Ast_Expression(AST_Lt));
+            when T_Le => op_stack.Append(Create_Ast_Expression(AST_Le));
+            
             -- Unknown
             when others =>
                 Put_Line("Error: Invalid token in expression.");

@@ -96,7 +96,8 @@ procedure Print_Ast(file : AstFile) is
             
             when AST_Assign |
                  AST_Add | AST_Sub | AST_Mul | AST_Div | AST_Mod |
-                 AST_And | AST_Or | AST_Xor =>
+                 AST_And | AST_Or | AST_Xor |
+                 AST_Eq | AST_Ne | AST_Gt | AST_Ge | AST_Lt | AST_Le =>
                 Put("(");
                 Print(expr.lval);
                 if expr.ast_type = AST_Assign then Put(" := ");
@@ -108,6 +109,12 @@ procedure Print_Ast(file : AstFile) is
                 elsif expr.ast_type = AST_And then Put(" & ");
                 elsif expr.ast_type = AST_Or then Put(" | ");
                 elsif expr.ast_type = AST_Xor then Put(" ^ ");
+                elsif expr.ast_type = AST_Eq then Put(" = ");
+                elsif expr.ast_type = AST_Ne then Put(" != ");
+                elsif expr.ast_type = AST_Gt then Put(" > ");
+                elsif expr.ast_type = AST_Ge then Put(" >= ");
+                elsif expr.ast_type = AST_Lt then Put(" < ");
+                elsif expr.ast_type = AST_Le then Put(" <= ");
                 end if;
                 Print(expr.rval);
                 Put(")");
