@@ -115,8 +115,8 @@ procedure Print_Ast(file : AstFile) is
     
     procedure Print(block : AstBlock; indent : integer) is
     begin
-        for i in 0 .. indent loop Put(" "); end loop;
         for stmt of block.statements loop
+            for i in 0 .. indent loop Put(" "); end loop;
             Print(stmt);
         end loop;
     end Print;
