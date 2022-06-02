@@ -35,7 +35,7 @@ end Lex_Close;
 -- The token getter function
 --
 function Lex_Get_Next return Token is
-    t : Token := (T_None, To_Unbounded_String(""), 0);
+    t : Token := (T_None, To_Unbounded_String(""), 0, others => <>);
     buffer : Unbounded_String := To_Unbounded_String("");
     c : character := ' ';
     
@@ -45,7 +45,8 @@ function Lex_Get_Next return Token is
         case c is
             when '(' | ')' => return true;
             when ';' | ':' | '=' => return true;
-            when '+' | '-' | '*' | '/' => return true;
+            when '+' | '-' | '*' | '/' | '%' => return true;
+            when '&' | '^' | '|' => return true;
             
             when others => return false;
         end case;
@@ -74,6 +75,10 @@ function Lex_Get_Next return Token is
             when '-' => t.token_type := T_Sub;
             when '*' => t.token_type := T_Mul;
             when '/' => t.token_type := T_Div;
+            when '%' => t.token_type := T_Mod;
+            when '&' => t.token_type := T_And;
+            when '|' => t.token_type := T_Or;
+            when '^' => t.token_type := T_Xor;
             
             when ':' =>
                 Look_Ahead(F, c2, eol);
@@ -107,6 +112,8 @@ function Lex_Get_Next return Token is
         elsif buffer = "char" then t.token_type := T_Char;
         elsif buffer = "string" then t.token_type := T_String;
         elsif buffer = "bool" then t.token_type := T_Bool;
+        elsif buffer = "true" then t.token_type := T_True;
+        elsif buffer = "false" then t.token_type := T_False;
         else t.token_type := T_None;
         end if;
     end Get_Keyword;
@@ -161,6 +168,15 @@ begin
             t.token_type := T_StringL;
             t.string_value := buffer;
             buffer := To_Unbounded_String("");
+            return t;
+        end if;
+        
+        -- Check for characters
+        if c = ''' then
+            Get_Immediate(F, c);
+            t.token_type := T_CharL;
+            t.char_value := c;
+            Get_Immediate(F, c);
             return t;
         end if;
         

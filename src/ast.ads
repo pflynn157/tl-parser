@@ -21,11 +21,18 @@ package AST is
         AST_Sub,
         AST_Mul,
         AST_Div,
+        AST_Mod,
+        AST_And,
+        AST_Or,
+        AST_Xor,
         
         -- Literals
         AST_Id,
         AST_Int,
-        AST_String
+        AST_String,
+        AST_Char,
+        AST_True,
+        AST_False
     );
     
     type DataType is (
@@ -49,6 +56,7 @@ package AST is
         
         int_value : integer := 0;
         string_value : Unbounded_String;
+        char_value : character := ' ';
     end record;
 
     --

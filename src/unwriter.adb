@@ -75,11 +75,16 @@ begin
         -- Literals and identifiers
         when AST_Int => Put(expr.int_value, 0);
         when AST_String => Put('"' & To_String(expr.string_value) & '"');
+        when AST_Char => Put("'" & expr.char_value & "'");
         when AST_Id => Put(To_String(expr.string_value));
+        
+        when AST_True => Put("true");
+        when AST_False => Put("false");
         
         -- Operators
         when AST_Assign |
-             AST_Add | AST_Sub | AST_Mul | AST_Div =>
+             AST_Add | AST_Sub | AST_Mul | AST_Div | AST_Mod |
+             AST_And | AST_Or | AST_Xor =>
             if print_lval then
                 unwrite_expression(expr.lval.all);
             end if;
@@ -88,7 +93,11 @@ begin
                 when AST_Add => Put(" + ");
                 when AST_Sub => Put(" - ");
                 when AST_Mul => Put(" * ");
-                when Ast_Div => Put(" / ");
+                when AST_Div => Put(" / ");
+                when AST_Mod => Put(" % ");
+                when AST_And => Put(" & ");
+                when AST_Or => Put(" | ");
+                when AST_Xor => Put(" ^ ");
                 
                 when others => null;
             end case;

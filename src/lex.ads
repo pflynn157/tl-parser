@@ -30,11 +30,18 @@ package Lex is
         T_Sub,
         T_Mul,
         T_Div,
+        T_Mod,
+        T_And,
+        T_Or,
+        T_Xor,
         
         -- Literals
         T_Id,
         T_Int,
-        T_StringL
+        T_StringL,
+        T_CharL,
+        T_True,
+        T_False
     );
     
     -- The structure
@@ -42,6 +49,7 @@ package Lex is
         token_type : TokenType := T_None;
         string_value : Unbounded_String;
         int_value : integer := 0;
+        char_value : character := ' ';
     end record;
     
     -- Functions

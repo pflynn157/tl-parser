@@ -24,7 +24,8 @@ procedure Create_Binary_Op(op : in out AstExpression; lval, rval : AstExpression
         lval => lval.lval,
         rval => lval.rval,
         int_value => lval.int_value,
-        string_value => lval.string_value
+        string_value => lval.string_value,
+        char_value => lval.char_value
     );
     
     rval_obj : AstExprObj := new AstExpression'(
@@ -32,7 +33,8 @@ procedure Create_Binary_Op(op : in out AstExpression; lval, rval : AstExpression
         lval => rval.lval,
         rval => rval.rval,
         int_value => rval.int_value,
-        string_value => rval.string_value
+        string_value => rval.string_value,
+        char_value => rval.char_value
     );
 begin
     op.lval := lval_obj;
@@ -86,9 +88,15 @@ procedure Print_Ast(file : AstFile) is
         case expr.ast_type is
             when AST_Int => Put(expr.int_value, 0);
             when AST_String => Put('"' & To_String(expr.string_value) & '"');
+            when AST_Char => Put("CHAR(" & expr.char_value & ")");
             when AST_Id => Put(To_String(expr.string_value));
             
-            when AST_Assign | AST_Add | AST_Sub | AST_Mul | AST_Div =>
+            when AST_True => Put("TRUE");
+            when AST_False => Put("FALSE");
+            
+            when AST_Assign |
+                 AST_Add | AST_Sub | AST_Mul | AST_Div | AST_Mod |
+                 AST_And | AST_Or | AST_Xor =>
                 Put("(");
                 Print(expr.lval);
                 if expr.ast_type = AST_Assign then Put(" := ");
@@ -96,6 +104,10 @@ procedure Print_Ast(file : AstFile) is
                 elsif expr.ast_type = AST_Sub then Put(" - ");
                 elsif expr.ast_type = AST_Mul then Put(" * ");
                 elsif expr.ast_type = AST_Div then Put(" / ");
+                elsif expr.ast_type = AST_Mod then Put(" % ");
+                elsif expr.ast_type = AST_And then Put(" & ");
+                elsif expr.ast_type = AST_Or then Put(" | ");
+                elsif expr.ast_type = AST_Xor then Put(" ^ ");
                 end if;
                 Print(expr.rval);
                 Put(")");

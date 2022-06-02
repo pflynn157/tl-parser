@@ -226,10 +226,18 @@ begin
                 expr.string_value := t.string_value;
                 stack.Append(expr);
                 
+            when T_CharL =>
+                expr := Create_Ast_Expression(AST_Char);
+                expr.char_value := t.char_value;
+                stack.Append(expr);
+                
             when T_Id =>
                 expr := Create_Ast_Expression(AST_Id);
                 expr.string_value := t.string_value;
                 stack.Append(expr);
+                
+            when T_True => stack.Append(Create_Ast_Expression(AST_True));
+            when T_False => stack.append(Create_Ast_Expression(AST_False));
                 
             -- Operators
             when T_Assign => op_stack.Append(Create_Ast_Expression(AST_Assign));
@@ -237,6 +245,10 @@ begin
             when T_Sub => op_stack.Append(Create_Ast_Expression(AST_Sub));
             when T_Mul => op_stack.Append(Create_Ast_Expression(AST_Mul));
             when T_Div => op_stack.Append(Create_Ast_Expression(AST_Div));
+            when T_Mod => op_stack.Append(Create_Ast_Expression(AST_Mod));
+            when T_And => op_stack.Append(Create_Ast_Expression(AST_And));
+            when T_Or => op_stack.Append(Create_Ast_Expression(AST_Or));
+            when T_Xor => op_stack.Append(Create_Ast_Expression(AST_Xor));
             
             -- Unknown
             when others =>
