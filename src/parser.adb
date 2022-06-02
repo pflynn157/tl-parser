@@ -133,12 +133,38 @@ procedure Parse_Block(block : in out AstBlock) is
         Add_Statement(block, stmt);
     end Parse_Var_Dec;
     
+    -- A helper function for parsing ID expressions
+    procedure Parse_Id is
+        name : Unbounded_String := t.string_value;
+    begin
+        t := Lex_Get_Next;
+        if t.token_type = T_LParen then
+            stmt := Create_Ast_Statement(AST_Call_Stmt);
+            Set_Name(stmt, name);
+            expr := Parse_Expression(T_RParen);
+            Set_Expression(stmt, expr);
+            Add_Statement(block, stmt);
+            
+            t := Lex_Get_Next;
+            if t.token_type /= T_SemiColon then
+                Put_Line("Error: Expected terminator following function call.");
+                Put_Line(TokenType'Image(t.token_type));
+                return;
+            end if;
+        else
+            Put_Line("Error: Invalid token following ID.");
+            Put_Line(TokenType'Image(t.token_type));
+            return;
+        end if;
+    end Parse_Id;
+    
     -- Main Parse body
 begin
     t := Lex_Get_Next;
     while t.token_type /= T_End and t.token_type /= T_Eof loop
         case t.token_type is
             when T_Var => Parse_Var_Dec;
+            when T_Id => Parse_Id;
         
             when T_Return =>
                 stmt := Create_Ast_Statement(AST_Return);
@@ -193,6 +219,11 @@ begin
             when T_Int =>
                 expr := Create_Ast_Expression(AST_Int);
                 expr.int_value := t.int_value;
+                stack.Append(expr);
+                
+            when T_StringL =>
+                expr := Create_Ast_Expression(AST_String);
+                expr.string_value := t.string_value;
                 stack.Append(expr);
                 
             when T_Id =>

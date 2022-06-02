@@ -8,11 +8,15 @@ with lex; use lex;
 with unwriter; use unwriter;
 
 procedure Main is
+
+    -- Command line control variables
+    output_lex, output_ast : boolean := false;
+    input_file : Unbounded_String;
     
     procedure Lex_Test is
         t : Token;
     begin
-        Lex_Init("first.tl");
+        Lex_Init(To_String(input_file));
         t := Lex_Get_Next;
         while t.token_type /= T_Eof loop
             Put_Line(TokenType'Image(t.token_type));
@@ -20,10 +24,6 @@ procedure Main is
         end loop;
         Lex_Close;
     end Lex_Test;
-    
-    -- Command line control variables
-    output_lex, output_ast : boolean := false;
-    input_file : Unbounded_String;
     
     -- The ast file
     ast_file : AstFile;

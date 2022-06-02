@@ -12,6 +12,7 @@ package AST is
         -- Statements
         AST_Var,
         AST_Return,
+        AST_Call_Stmt,
         
         -- Expressions
         -- Operators
@@ -23,7 +24,8 @@ package AST is
         
         -- Literals
         AST_Id,
-        AST_Int
+        AST_Int,
+        AST_String
     );
     
     type DataType is (

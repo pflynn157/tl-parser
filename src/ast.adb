@@ -85,6 +85,7 @@ procedure Print_Ast(file : AstFile) is
     begin
         case expr.ast_type is
             when AST_Int => Put(expr.int_value, 0);
+            when AST_String => Put('"' & To_String(expr.string_value) & '"');
             when AST_Id => Put(To_String(expr.string_value));
             
             when AST_Assign | AST_Add | AST_Sub | AST_Mul | AST_Div =>

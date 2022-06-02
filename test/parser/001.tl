@@ -1,3 +1,3 @@
 func main is
-    return;
+    println("Hello!");
 end

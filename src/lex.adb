@@ -43,6 +43,7 @@ function Lex_Get_Next return Token is
     function Is_Symbol return boolean is
     begin
         case c is
+            when '(' | ')' => return true;
             when ';' | ':' | '=' => return true;
             when '+' | '-' | '*' | '/' => return true;
             
@@ -66,6 +67,8 @@ function Lex_Get_Next return Token is
         eol : boolean;
     begin
         case c is
+            when '(' => t.token_type := T_LParen;
+            when ')' => t.token_type := T_RParen;
             when ';' => t.token_type := T_SemiColon;
             when '+' => t.token_type := T_Add;
             when '-' => t.token_type := T_Sub;
@@ -132,6 +135,7 @@ begin
         return t;
     end if;
 
+    -- TODO: See if that "Proccess_Buffer" can be removed
     if End_Of_File(F) then
         if Length(buffer) > 0 then
             Process_Buffer;
@@ -144,6 +148,22 @@ begin
     
     while not End_Of_File(F) loop
         Get_Immediate(F, c);
+        
+        -- If we have a string, parse it
+        if c = '"' then
+            buffer := To_Unbounded_String("");
+            Get_Immediate(F, c);
+            while c /= '"' loop
+                Append(buffer, c);
+                Get_Immediate(F, c);
+            end loop;
+            
+            t.token_type := T_StringL;
+            t.string_value := buffer;
+            buffer := To_Unbounded_String("");
+            return t;
+        end if;
+        
         if c = ' ' or c = LF or Is_Symbol then
             if Is_Symbol then
                 Get_Symbol;

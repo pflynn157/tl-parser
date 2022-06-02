@@ -1,7 +1,3 @@
 func main is
-    return x + y;
-    return x - y;
-    return x * y;
-    return x / y;
-    return x + y - 1 * 2 / 10;
+    var x : i32 := 1;
 end

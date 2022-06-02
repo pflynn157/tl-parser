@@ -1,3 +1,4 @@
 func main is
-    return 3 + 2;
+    println("Hello!");
+    println("How are you?");
 end

@@ -1,5 +1,6 @@
+func sayHello is
+    println("Hello!");
+end
 func main is
-    return 3 + x;
-    return x + y;
-    return 2 - x;
+    sayHello();
 end

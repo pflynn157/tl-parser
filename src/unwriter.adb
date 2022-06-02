@@ -48,6 +48,11 @@ begin
             unwrite_data_type(stmt.data_type);
             unwrite_expression(stmt.expr, false);
             Put_Line(";");
+            
+        when AST_Call_Stmt =>
+            Put(To_String(stmt.name) & "(");
+            unwrite_expression(stmt.expr);
+            Put_Line(");");
         
         when AST_Return =>
             Put("return");
@@ -69,6 +74,7 @@ begin
     case expr.ast_type is
         -- Literals and identifiers
         when AST_Int => Put(expr.int_value, 0);
+        when AST_String => Put('"' & To_String(expr.string_value) & '"');
         when AST_Id => Put(To_String(expr.string_value));
         
         -- Operators

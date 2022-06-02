@@ -22,6 +22,7 @@ package Lex is
         T_Bool,
         
         -- Symbols
+        T_LParen, T_RParen,
         T_SemiColon,
         T_Colon,
         T_Assign,
@@ -32,7 +33,8 @@ package Lex is
         
         -- Literals
         T_Id,
-        T_Int
+        T_Int,
+        T_StringL
     );
     
     -- The structure
