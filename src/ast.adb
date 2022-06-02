@@ -10,6 +10,14 @@ package body Ast is
 --
 -- Variable class functions
 --
+function Has_Expression(stmt : AstStatement) return boolean is
+begin
+    if stmt.ast_type = AST_None then
+        return false;
+    end if;
+    return true;
+end Has_Expression;
+
 procedure Create_Binary_Op(op : in out AstExpression; lval, rval : AstExpression) is
     lval_obj : AstExprObj := new AstExpression'(
         ast_type => lval.ast_type,

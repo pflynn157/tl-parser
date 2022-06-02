@@ -79,6 +79,7 @@ package AST is
     --
     -- Functions
     --
+    function Has_Expression(stmt : AstStatement) return boolean;
     procedure Create_Binary_Op(op : in out AstExpression; lval, rval : AstExpression);
     procedure Set_Expression(stmt : in out AstStatement; expr : AstExpression);
     procedure Add_Statement(block : in out AstBlock; stmt : AstStatement);
