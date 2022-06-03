@@ -13,6 +13,7 @@ package AST is
         AST_Var,
         AST_Return,
         AST_Call_Stmt,
+        AST_While,
         
         -- Expressions
         AST_Expr_List,
@@ -73,11 +74,15 @@ package AST is
     --
     -- Statement representation
     --
+    type AstBlock;
+    type AstBlockObj is access AstBlock;
+    
     type AstStatement is record
         ast_type : AstType := AST_None;
         expr : AstExpression;
         data_type : DataType := Void;
         name : Unbounded_String;
+        block : AstBlockObj;
     end record;
     
     package AstStmtVector is new Ada.Containers.Vectors

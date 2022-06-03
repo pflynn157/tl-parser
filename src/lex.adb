@@ -131,6 +131,8 @@ function Lex_Get_Next return Token is
         elsif buffer = "end" then t.token_type := T_End;
         elsif buffer = "return" then t.token_type := T_Return;
         elsif buffer = "var" then t.token_type := T_Var;
+        elsif buffer = "while" then t.token_type := T_While;
+        elsif buffer = "do" then t.token_type := T_Do;
         elsif buffer = "i8" then t.token_type := T_I8;
         elsif buffer = "u8" then t.token_type := T_U8;
         elsif buffer = "i16" then t.token_type := T_I16;

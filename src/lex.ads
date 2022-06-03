@@ -12,6 +12,8 @@ package Lex is
         T_End,
         T_Return,
         T_Var,
+        T_While,
+        T_Do,
         
         -- Type keywords
         T_I8, T_U8,

@@ -7,7 +7,7 @@ package body Unwriter is
 --
 -- Forward declarations
 --
-procedure unwrite_block(block : AstBlock);
+procedure unwrite_block(block : AstBlock; indent : integer := 4);
 procedure unwrite_statement(stmt : AstStatement; indent : integer);
 procedure unwrite_expression(expr : AstExpression; print_lval : boolean := true);
 procedure unwrite_data_type(data_type : DataType);
@@ -28,10 +28,10 @@ end unwrite;
 --
 -- Uwrites a statement block
 --
-procedure unwrite_block(block : AstBlock) is
+procedure unwrite_block(block : AstBlock; indent : integer := 4) is
 begin
     for stmt of block.statements loop
-        unwrite_statement(stmt, 4);
+        unwrite_statement(stmt, indent);
     end loop;
 end unwrite_block;
 
@@ -39,8 +39,12 @@ end unwrite_block;
 -- Unwrites a statement
 --
 procedure unwrite_statement(stmt : AstStatement; indent : integer) is
+    procedure Do_Indent is
+    begin
+        for i in 0 .. indent loop Put(" "); end loop;
+    end Do_Indent;
 begin
-    for i in 0 .. indent loop Put(" "); end loop;
+    Do_Indent;
 
     case stmt.ast_type is
         when AST_Var =>
@@ -61,6 +65,13 @@ begin
                 unwrite_expression(stmt.expr);
             end if;
             Put_Line(";");
+            
+        when AST_While =>
+            Put("while ");
+            unwrite_expression(stmt.expr);
+            Put_Line(" do");
+            unwrite_block(stmt.block.all, indent + 4);
+            Do_Indent; Put_Line("end");
         
         when others => null;
     end case;

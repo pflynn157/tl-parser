@@ -83,8 +83,10 @@ end Add_Function;
 -- The main debug function
 --
 procedure Print_Ast(file : AstFile) is
-    
+
+    procedure Print(block : AstBlock; indent : integer);
     procedure Print(expr : AstExpression);
+    
     procedure Print(expr : AstExprObj) is
         expr2 : AstExpression := expr.all;
     begin
@@ -141,20 +143,25 @@ procedure Print_Ast(file : AstFile) is
         end case;
     end Print;
     
-    procedure Print(stmt : AstStatement) is
+    procedure Print(stmt : AstStatement; indent : integer := 0) is
     begin
         Put(AstType'Image(stmt.ast_type) & " " & To_String(stmt.name) & " " & DataType'Image(stmt.data_type) & " ");
         if stmt.expr.ast_type /= AST_None then
             Print(stmt.expr);
         end if;
-        New_Line;
+        if stmt.ast_type = AST_While then
+            New_Line;
+            Print(stmt.block.all, indent + 4);
+        else
+            New_Line;
+        end if;
     end Print;
     
     procedure Print(block : AstBlock; indent : integer) is
     begin
         for stmt of block.statements loop
             for i in 0 .. indent loop Put(" "); end loop;
-            Print(stmt);
+            Print(stmt, indent);
         end loop;
     end Print;
     

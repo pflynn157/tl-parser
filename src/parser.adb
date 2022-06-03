@@ -165,6 +165,21 @@ begin
         case t.token_type is
             when T_Var => Parse_Var_Dec;
             when T_Id => Parse_Id;
+            
+            when T_While =>
+                stmt := Create_Ast_Statement(AST_While);
+                expr := Parse_Expression(T_Do);
+                Set_Expression(stmt, expr);
+                -- TODO: Clean this up
+                declare
+                    block2 : AstBlock;
+                    block_obj : AstBlockObj;
+                begin
+                    Parse_Block(block2);
+                    block_obj := new AstBlock'(statements => block2.statements);
+                    stmt.block := block_obj;
+                    Add_Statement(block, stmt);
+                end;
         
             when T_Return =>
                 stmt := Create_Ast_Statement(AST_Return);
