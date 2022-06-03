@@ -14,6 +14,7 @@ package AST is
         AST_Return,
         AST_Call_Stmt,
         AST_While,
+        AST_If, AST_Elif, AST_Else,
         
         -- Expressions
         AST_Expr_List,
@@ -94,6 +95,9 @@ package AST is
     --
     type AstBlock is record
         statements : AstStmtVector.Vector;
+        
+        -- For conditionals
+        branches : AstStmtVector.Vector;
     end record;
 
     --
@@ -125,6 +129,7 @@ package AST is
     procedure Set_Expression(stmt : in out AstStatement; expr : AstExpression);
     procedure Set_Name(stmt : in out AstStatement; name : Unbounded_String);
     procedure Set_Data_Type(stmt : in out AstStatement; data_type : DataType);
+    procedure Add_Branch(block : in out AstBlock; stmt : AstStatement);
     procedure Add_Statement(block : in out AstBlock; stmt : AstStatement);
     procedure Add_Statement(func : in out AstFunction; stmt : AstStatement);
     procedure Add_Function(Self: in out AstFile; ast_func : AstFunction);

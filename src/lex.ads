@@ -13,7 +13,8 @@ package Lex is
         T_Return,
         T_Var,
         T_While,
-        T_Do,
+        T_Do, T_Then,
+        T_If, T_Elif, T_Else,
         
         -- Type keywords
         T_I8, T_U8,

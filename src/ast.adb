@@ -64,6 +64,11 @@ begin
     stmt.data_type := data_type;
 end Set_Data_Type;
 
+procedure Add_Branch(block : in out AstBlock; stmt : AstStatement) is
+begin
+    block.branches.Append(stmt);
+end Add_Branch;
+
 procedure Add_Statement(block : in out AstBlock; stmt : AstStatement) is
 begin
     block.statements.Append(stmt);
@@ -149,9 +154,16 @@ procedure Print_Ast(file : AstFile) is
         if stmt.expr.ast_type /= AST_None then
             Print(stmt.expr);
         end if;
-        if stmt.ast_type = AST_While then
+        if stmt.ast_type = AST_While or stmt.ast_type = AST_Else then
             New_Line;
             Print(stmt.block.all, indent + 4);
+        elsif stmt.ast_type = AST_If or stmt.ast_type = AST_Elif then
+            New_Line;
+            Print(stmt.block.all, indent + 4);
+            for br of stmt.block.all.branches loop
+                for i in 0 .. indent loop Put(" "); end loop;
+                Print(br, indent);
+            end loop;
         else
             New_Line;
         end if;

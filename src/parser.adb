@@ -158,6 +158,26 @@ procedure Parse_Block(block : in out AstBlock) is
         end if;
     end Parse_Id;
     
+    -- A helper function to handle sub-blocks
+    procedure Parse_Sub_Block(is_branch : boolean := false) is
+        block2 : AstBlock;
+        block_obj : AstBlockObj;
+    begin
+        Parse_Block(block2);
+        --if is_branch then Add_Branch(block2, stmt); end if;
+        block_obj := new AstBlock'(statements => block2.statements, branches => block2.branches);
+        stmt.block := block_obj;
+        
+        if is_branch then
+            Add_Branch(block, stmt);
+        else
+            Add_Statement(block, stmt);
+        end if;
+        --if not is_branch then
+        --    Add_Statement(block, stmt);
+        --end if;
+    end Parse_Sub_Block;
+    
     -- Main Parse body
 begin
     t := Lex_Get_Next;
@@ -170,16 +190,25 @@ begin
                 stmt := Create_Ast_Statement(AST_While);
                 expr := Parse_Expression(T_Do);
                 Set_Expression(stmt, expr);
-                -- TODO: Clean this up
-                declare
-                    block2 : AstBlock;
-                    block_obj : AstBlockObj;
-                begin
-                    Parse_Block(block2);
-                    block_obj := new AstBlock'(statements => block2.statements);
-                    stmt.block := block_obj;
-                    Add_Statement(block, stmt);
-                end;
+                Parse_Sub_Block;
+                
+            when T_If =>
+                stmt := Create_Ast_Statement(AST_If);
+                expr := Parse_Expression(T_Then);
+                Set_Expression(stmt, expr);
+                Parse_Sub_Block;
+            
+            when T_Elif =>
+                stmt := Create_Ast_Statement(AST_Elif);
+                expr := Parse_Expression(T_Then);
+                Set_Expression(stmt, expr);
+                Parse_Sub_Block(true);
+                return;
+            
+            when T_Else =>
+                stmt := Create_Ast_Statement(AST_Else);
+                Parse_Sub_Block(true);
+                return;
         
             when T_Return =>
                 stmt := Create_Ast_Statement(AST_Return);

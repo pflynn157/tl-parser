@@ -72,6 +72,24 @@ begin
             Put_Line(" do");
             unwrite_block(stmt.block.all, indent + 4);
             Do_Indent; Put_Line("end");
+            
+        when AST_If | AST_Elif =>
+            if stmt.ast_type = AST_Elif then Put("elif ");
+            else Put("if ");
+            end if;
+            unwrite_expression(stmt.expr);
+            Put_Line(" then");
+            unwrite_block(stmt.block.all, indent + 4);
+            for br of stmt.block.all.branches loop
+                unwrite_statement(br, indent);
+            end loop;
+            if stmt.ast_type = AST_If then
+                Do_Indent; Put_Line("end");
+            end if;
+            
+        when AST_Else =>
+            Put_Line("else");
+            unwrite_block(stmt.block.all, indent + 4);
         
         when others => null;
     end case;
