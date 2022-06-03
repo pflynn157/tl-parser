@@ -122,6 +122,9 @@ begin
         when AST_Else =>
             Put_Line("else");
             unwrite_block(stmt.block.all, indent + 4);
+            
+        when AST_Break => Put_Line("break;");
+        when AST_Continue => Put_Line("continue;");
         
         when others => null;
     end case;

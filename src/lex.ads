@@ -15,6 +15,7 @@ package Lex is
         T_While,
         T_Do, T_Then,
         T_If, T_Elif, T_Else,
+        T_Break, T_Continue,
         
         -- Type keywords
         T_I8, T_U8,

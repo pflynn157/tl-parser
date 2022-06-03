@@ -315,6 +315,17 @@ begin
                     Set_Expression(stmt, expr);
                 end if;
                 Add_Statement(block, stmt);
+                
+            when T_Break | T_Continue =>
+                if t.token_type = T_Continue then stmt := Create_Ast_Statement(AST_Continue);
+                else stmt := Create_Ast_Statement(AST_Break);
+                end if;
+                Add_Statement(block, stmt);
+                t := Lex_Get_Next;
+                if t.token_type /= T_SemiColon then
+                    Put_Line("Error: Expected terminator.");
+                    Put_Line(TokenType'Image(t.token_type));
+                end if;
             
             when others =>
                 Put_Line("Error: Invalid token in statement.");

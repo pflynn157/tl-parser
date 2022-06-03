@@ -17,6 +17,7 @@ package AST is
         AST_While,
         AST_If, AST_Elif, AST_Else,
         AST_Expr_Stmt,
+        AST_Break, AST_Continue,
         
         -- Expressions
         AST_Expr_List,
