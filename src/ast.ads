@@ -10,8 +10,10 @@ package AST is
         AST_None,
         
         -- Statements
-        AST_Var, AST_Struct,
+        AST_Var,
+        AST_Struct,
         AST_Array,
+        AST_Const,
         AST_Return,
         AST_Call_Stmt,
         AST_While,
@@ -152,6 +154,7 @@ package AST is
     --
     type AstFile is record
         name : Unbounded_String;
+        consts : AstStmtVector.Vector;      -- Only meant to hold constants
         structs : AstStructVector.Vector;
         funcs : AstFuncVector.Vector;
     end record;
@@ -172,6 +175,7 @@ package AST is
     procedure Add_Function(Self: in out AstFile; ast_func : AstFunction);
     procedure Add_Struct(file : in out AstFile; struct : AstStruct);
     procedure Add_Struct_Item(struct : in out AstStruct; name : Unbounded_String; data_type : DataType; expr : AstExpression);
+    procedure Add_Global_Const(file : in out AstFile; const : AstStatement);
     procedure Print_Ast(file : AstFile);
     
     -- Helper functions

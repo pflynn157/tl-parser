@@ -19,7 +19,14 @@ procedure unwrite_data_type(data_type : DataType);
 procedure unwrite(file : AstFile) is
     arg_index : Count_Type := 0;
 begin
-    -- Start with structures
+    -- Global constants if they exist
+    if file.consts.Length > 0 then
+        for const of file.consts loop
+            unwrite_statement(const, 0);
+        end loop;
+    end if;
+    
+    -- Print structures
     for struct of file.structs loop
         Put_Line("struct " & To_String(struct.name) & " is");
         for arg of struct.args loop
@@ -76,7 +83,9 @@ end unwrite_block;
 procedure unwrite_statement(stmt : AstStatement; indent : integer) is
     procedure Do_Indent is
     begin
-        for i in 0 .. indent loop Put(" "); end loop;
+        if indent > 0 then
+            for i in 0 .. indent loop Put(" "); end loop;
+        end if;
     end Do_Indent;
 begin
     Do_Indent;
@@ -84,6 +93,12 @@ begin
     case stmt.ast_type is
         when AST_Var =>
             Put("var " & To_String(stmt.name) & " : ");
+            unwrite_data_type(stmt.data_type);
+            unwrite_expression(stmt.expr, false);
+            Put_Line(";");
+            
+        when AST_Const =>
+            Put("const " & To_String(stmt.name) & " : ");
             unwrite_data_type(stmt.data_type);
             unwrite_expression(stmt.expr, false);
             Put_Line(";");

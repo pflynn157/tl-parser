@@ -101,6 +101,11 @@ begin
     struct.args.Append(arg);
 end Add_Struct_Item;
 
+procedure Add_Global_Const(file : in out AstFile; const : AstStatement) is
+begin
+    file.consts.Append(const);
+end Add_Global_Const;
+
 --
 -- The main debug function
 --
@@ -252,6 +257,12 @@ procedure Print_Ast(file : AstFile) is
 begin
     Put_Line("FILE: " & To_String(file.name));
     New_Line;
+    if file.consts.Length > 0 then
+        for stmt of file.consts loop
+            Print(stmt);
+        end loop;
+        New_Line;
+    end if;
     for struct of file.structs loop
         Print(struct);
     end loop;

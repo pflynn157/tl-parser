@@ -12,6 +12,7 @@ package Lex is
         T_End,
         T_Return,
         T_Var,
+        T_Const,
         T_While,
         T_Do, T_Then,
         T_If, T_Elif, T_Else,

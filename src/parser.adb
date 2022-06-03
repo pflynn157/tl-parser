@@ -22,6 +22,7 @@ package AstExprStack is new Ada.Containers.Vectors
 procedure Parse_Struct(file : in out AstFile);
 procedure Parse_Function(file : in out AstFile);
 procedure Parse_Block(block : in out AstBlock);
+function Parse_Const return AstStatement;
 function Parse_Expression(end_token : TokenType) return AstExpression;
 procedure Parse_Data_Type(data_type : in out DataType);
 
@@ -30,6 +31,7 @@ procedure Parse_Data_Type(data_type : in out DataType);
 --
 function Parse(name : string) return AstFile is
     file : AstFile := Create_Ast_File(name);
+    const_stmt : AstStatement;
     t : Token;
 begin
     Lex_Init(name);
@@ -40,6 +42,10 @@ begin
         case t.token_type is
             when T_Struct => Parse_Struct(file);
             when T_Func => Parse_Function(file);
+            
+            when T_Const =>
+                const_stmt := Parse_Const;
+                Add_Global_Const(file, const_stmt);
             
             when others =>
                 Put_Line("Error: Invalid token in global scope.");
@@ -433,6 +439,10 @@ begin
             when T_Struct => Parse_Struct_Dec;
             when T_Id => Parse_Id;
             
+            when T_Const =>
+                stmt := Parse_Const;
+                Add_Statement(block, stmt);
+            
             when T_While =>
                 stmt := Create_Ast_Statement(AST_While);
                 expr := Parse_Expression(T_Do);
@@ -484,6 +494,51 @@ begin
         t := Lex_Get_Next;
     end loop;
 end Parse_Block;
+
+--
+-- Parses a constant declaration
+--
+function Parse_Const return AstStatement is
+    t : Token;
+    stmt : AstStatement := Create_Ast_Statement(AST_Const);
+    name : Unbounded_String;
+    data_type : DataType := Void;
+    expr, lval : AstExpression;
+begin
+    -- The name
+    t := Lex_Get_Next;
+    name := t.string_value;
+    if t.token_type /= T_Id then
+        Put_Line("Error: Expected constant name.");
+        Put_Line(TokenType'Image(t.token_type));
+        return stmt;
+    end if;
+    
+    -- Make sure we have a colon
+    t := Lex_Get_Next;
+    if t.token_type /= T_Colon then
+        Put_Line("Error: Expected colon in constant declaration.");
+        Put_Line(TokenType'Image(t.token_type));
+        return stmt;
+    end if;
+    
+    -- The data type
+    Parse_Data_Type(data_type);
+    
+    -- Parse the assignment
+    expr := Parse_Expression(T_SemiColon);
+    
+    lval := Create_Ast_Expression(AST_Id);
+    lval.string_value := name;
+    Create_Binary_Op(expr, lval, expr.rval.all);
+    
+    -- Create the statement
+    Set_Name(stmt, name);
+    Set_Data_Type(stmt, data_type);
+    Set_Expression(stmt, expr);
+
+    return stmt;
+end Parse_Const;
 
 --
 -- The expression parser
