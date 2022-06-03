@@ -60,6 +60,7 @@ procedure Parse_Function(file : in out AstFile) is
     func_name : Unbounded_String;
     func : AstFunction;
     data_type : DataType := Void;
+    args : AstArgVector.Vector;
 begin
     -- Start with the function name
     t := Lex_Get_Next;
@@ -73,7 +74,38 @@ begin
     t := Lex_Get_Next;
     
     -- Arguments
-    -- TODO
+    if t.token_type = T_LParen then
+        t := Lex_Get_Next;
+        while t.token_type /= T_RParen loop
+            declare
+                arg : AstArg;
+            begin
+                arg.name := t.string_value;
+                if t.token_type /= T_Id then
+                    Put_Line("Error: Invalid argument: Expected name.");
+                    Put_Line(TokenType'Image(t.token_type));
+                    return;
+                end if;
+                
+                t := Lex_Get_Next;
+                if t.token_type /= T_Colon then
+                    Put_Line("Error: Invalid argument: Expected colon.");
+                    Put_Line(TokenType'Image(t.token_type));
+                    return;
+                end if;
+                
+                Parse_Data_Type(arg.data_type);
+                args.Append(arg);
+                
+                t := Lex_Get_Next;
+                if t.token_type = T_Comma then
+                    t := Lex_Get_Next;
+                end if;
+            end;
+        end loop;
+        
+        t := Lex_Get_Next;
+    end if;
     
     -- Return type
     if t.token_type = T_Arrow then
@@ -90,6 +122,7 @@ begin
     
     -- Construct the AST function and build the block
     func := Create_Ast_Function(To_String(func_name), data_type);
+    func.args := args;
     Parse_Block(func.block);
     Add_Function(file, func);
 end Parse_Function;

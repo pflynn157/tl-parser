@@ -198,8 +198,21 @@ procedure Print_Ast(file : AstFile) is
     end Print;
     
     procedure Print(func : AstFunction) is
+        arg_index : Count_Type := 0;
     begin
-        Put_Line("FUNC " & To_String(func.name) & " -> " & DataType'Image(func.data_type) & " is");
+        Put("FUNC " & To_String(func.name));
+        if func.args.Length > 0 then
+            Put("(");
+            for arg of func.args loop
+                Put(To_String(arg.name) & " : " & DataType'Image(arg.data_type));
+                if arg_index < (func.args.Length - 1) then
+                    Put(", ");
+                end if;
+                arg_index := arg_index + 1;
+            end loop;
+            Put(")");
+        end if;
+        Put_Line(" -> " & DataType'Image(func.data_type) & " is");
         Print(func.block, 2);
         Put_Line("end");
         New_Line;

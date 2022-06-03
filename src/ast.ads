@@ -104,6 +104,18 @@ package AST is
         -- For conditionals
         branches : AstStmtVector.Vector;
     end record;
+    
+    --
+    -- Argument representation
+    --
+    type AstArg is record
+        name : Unbounded_String;
+        data_type : DataType := Void;
+    end record;
+    
+    package AstArgVector is new Ada.Containers.Vectors
+        ( Index_Type => Natural,
+          Element_Type => AstArg);
 
     --
     -- Function representation
@@ -112,6 +124,7 @@ package AST is
         name : Unbounded_String;
         data_type : DataType := Void;
         block : AstBlock;
+        args : AstArgVector.Vector;
     end record;
 
     package AstFuncVector is new Ada.Containers.Vectors

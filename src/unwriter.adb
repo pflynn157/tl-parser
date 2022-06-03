@@ -1,6 +1,7 @@
 with Ada.Text_IO;           use Ada.Text_IO;
 with Ada.Integer_Text_IO;   use Ada.Integer_Text_IO;
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
+with Ada.Containers;        use Ada.Containers;
 
 package body Unwriter is
 
@@ -16,18 +17,32 @@ procedure unwrite_data_type(data_type : DataType);
 -- The entry point of the unwriter
 --
 procedure unwrite(file : AstFile) is
+    arg_index : Count_Type := 0;
 begin
     -- Start with functions
     for func of file.funcs loop
-        Put("func " & To_String(func.name) & " ");
-        if func.data_type /= Void then
-            Put("-> ");
-            unwrite_data_type(func.data_type);
-            Put(" ");
+        Put("func " & To_String(func.name));
+        if func.args.Length > 0 then
+            Put("(");
+            for arg of func.args loop
+                Put(To_String(arg.name) & " : ");
+                unwrite_data_type(arg.data_type);
+                if arg_index + 1 < (func.args.Length) then
+                    Put(", ");
+                end if;
+                arg_index := arg_index + 1;
+            end loop;
+            Put(")");
         end if;
-        Put_Line("is");
+        if func.data_type /= Void then
+            Put(" -> ");
+            unwrite_data_type(func.data_type);
+        end if;
+        Put_Line(" is");
         unwrite_block(func.block);
         Put_Line("end");
+        
+        arg_index := 0;
     end loop;
 end unwrite;
 
