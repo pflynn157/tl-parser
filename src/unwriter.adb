@@ -53,6 +53,13 @@ begin
             unwrite_expression(stmt.expr, false);
             Put_Line(";");
             
+        when AST_Array =>
+            Put("var " & To_String(stmt.name) & " : ");
+            unwrite_data_type(stmt.data_type);
+            Put("[");
+            unwrite_expression(stmt.expr);
+            Put_Line("];");
+            
         when AST_Call_Stmt =>
             Put(To_String(stmt.name) & "(");
             unwrite_expression(stmt.expr);

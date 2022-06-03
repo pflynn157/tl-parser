@@ -32,6 +32,14 @@ begin
 end Lex_Close;
 
 --
+-- Pushes a token to the stack for future retrieval
+--
+procedure Lex_Unget(t : Token) is
+begin
+    token_stack.Append(t);
+end Lex_Unget;
+
+--
 -- The token getter function
 --
 function Lex_Get_Next return Token is
@@ -44,6 +52,7 @@ function Lex_Get_Next return Token is
     begin
         case c is
             when '(' | ')' => return true;
+            when '[' | ']' => return true;
             when ';' | ':' | ',' | '=' => return true;
             when '+' | '-' | '*' | '/' | '%' => return true;
             when '&' | '^' | '|' => return true;
@@ -71,6 +80,8 @@ function Lex_Get_Next return Token is
         case c is
             when '(' => t.token_type := T_LParen;
             when ')' => t.token_type := T_RParen;
+            when '[' => t.token_type := T_LBracket;
+            when ']' => t.token_type := T_RBracket;
             when ';' => t.token_type := T_SemiColon;
             when ',' => t.token_type := T_Comma;
             when '+' => t.token_type := T_Add;

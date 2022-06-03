@@ -118,19 +118,49 @@ procedure Parse_Block(block : in out AstBlock) is
         
         Parse_Data_Type(data_type);
         
-        -- Now, parse the expression
-        expr := Parse_Expression(T_SemiColon);
+        -- Check the next token
+        t := Lex_Get_Next;
         
-        lval := Create_Ast_Expression(AST_Id);
-        lval.string_value := name;
-        Create_Binary_Op(expr, lval, expr.rval.all);
+        -- Array declaration
+        if t.token_type = T_LBracket then
+            expr := Parse_Expression(T_RBracket);
+            stmt := Create_Ast_Statement(AST_Array);
+            Set_Name(stmt, name);
+            Set_Data_Type(stmt, data_type);
+            Set_Expression(stmt, expr);
+            Add_Statement(block, stmt);
+            
+            t := Lex_Get_Next;
+            if t.token_type /= T_SemiColon then
+                Put_Line("Error: Expected terminator.");
+                Put_Line(TokenType'Image(t.token_type));
+                return;
+            end if;
         
-        -- Create the statement
-        stmt := Create_Ast_Statement(AST_Var);
-        Set_Name(stmt, name);
-        Set_Data_Type(stmt, data_type);
-        Set_Expression(stmt, expr);
-        Add_Statement(block, stmt);
+        -- Regular variable assignment
+        elsif t.token_type = T_Assign then
+            Lex_Unget(t);
+        
+            -- Now, parse the expression
+            expr := Parse_Expression(T_SemiColon);
+            
+            lval := Create_Ast_Expression(AST_Id);
+            lval.string_value := name;
+            Create_Binary_Op(expr, lval, expr.rval.all);
+            
+            -- Create the statement
+            stmt := Create_Ast_Statement(AST_Var);
+            Set_Name(stmt, name);
+            Set_Data_Type(stmt, data_type);
+            Set_Expression(stmt, expr);
+            Add_Statement(block, stmt);
+            
+        -- Syntax error
+        else
+            Put_Line("Error: Expected '[' or ':='");
+            Put_Line(TokenType'Image(t.token_type));
+            return;
+        end if;
     end Parse_Var_Dec;
     
     -- A helper function for parsing ID expressions
@@ -164,7 +194,6 @@ procedure Parse_Block(block : in out AstBlock) is
         block_obj : AstBlockObj;
     begin
         Parse_Block(block2);
-        --if is_branch then Add_Branch(block2, stmt); end if;
         block_obj := new AstBlock'(statements => block2.statements, branches => block2.branches);
         stmt.block := block_obj;
         
@@ -173,9 +202,6 @@ procedure Parse_Block(block : in out AstBlock) is
         else
             Add_Statement(block, stmt);
         end if;
-        --if not is_branch then
-        --    Add_Statement(block, stmt);
-        --end if;
     end Parse_Sub_Block;
     
     -- Main Parse body

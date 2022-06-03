@@ -26,6 +26,7 @@ package Lex is
         
         -- Symbols
         T_LParen, T_RParen,
+        T_LBracket, T_RBracket,
         T_SemiColon,
         T_Colon,
         T_Comma,
@@ -63,5 +64,6 @@ package Lex is
     -- Functions
     procedure Lex_Init(Path : String);
     procedure Lex_Close;
+    procedure Lex_Unget(t : Token);
     function Lex_Get_Next return Token;
 end Lex;

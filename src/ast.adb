@@ -152,7 +152,11 @@ procedure Print_Ast(file : AstFile) is
     begin
         Put(AstType'Image(stmt.ast_type) & " " & To_String(stmt.name) & " " & DataType'Image(stmt.data_type) & " ");
         if stmt.expr.ast_type /= AST_None then
-            Print(stmt.expr);
+            if stmt.ast_type = AST_Array then
+                Put("["); Print(stmt.expr); Put("]");
+            else
+                Print(stmt.expr);
+            end if;
         end if;
         if stmt.ast_type = AST_While or stmt.ast_type = AST_Else then
             New_Line;

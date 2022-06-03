@@ -11,6 +11,7 @@ package AST is
         
         -- Statements
         AST_Var,
+        AST_Array,
         AST_Return,
         AST_Call_Stmt,
         AST_While,
