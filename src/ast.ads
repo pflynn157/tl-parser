@@ -10,7 +10,7 @@ package AST is
         AST_None,
         
         -- Statements
-        AST_Var,
+        AST_Var, AST_Struct,
         AST_Array,
         AST_Return,
         AST_Call_Stmt,

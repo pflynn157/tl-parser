@@ -64,7 +64,7 @@ procedure Parse_Struct(file : in out AstFile) is
     
     -- For constructing items
     item_name : Unbounded_String;
-    item_type : DataType;
+    item_type : DataType := Void;
     item_expr : AstExpression;
 begin
     -- Start with the structure name
@@ -278,6 +278,52 @@ procedure Parse_Block(block : in out AstBlock) is
         end if;
     end Parse_Var_Dec;
     
+    -- Parses a structure declaration
+    procedure Parse_Struct_Dec is
+        var_name, struct_name : Unbounded_String;
+        struct_id : AstExpression;
+    begin
+        -- Syntax checks and gather info
+        t := Lex_Get_Next;
+        var_name := t.string_value;
+        if t.token_type /= T_Id then
+            Put_Line("Error: Expected variable name.");
+            Put_Line(TokenType'Image(t.token_type));
+            return;
+        end if;
+        
+        t := Lex_Get_Next;
+        if t.token_type /= T_Colon then
+            Put_Line("Error: Expected colon between variable name and structure name.");
+            Put_Line(TokenType'Image(t.token_type));
+            return;
+        end if;
+        
+        t := Lex_Get_Next;
+        struct_name := t.string_value;
+        if t.token_type /= T_Id then
+            Put_Line("Error: Expected structure name.");
+            Put_Line(TokenType'Image(t.token_type));
+            return;
+        end if;
+        
+        t := Lex_Get_Next;
+        if t.token_type /= T_SemiColon then
+            Put_line("Error: Expected terminator.");
+            Put_Line(TokenType'Image(t.token_type));
+            return;
+        end if;
+        
+        -- Construct the AST element
+        struct_id := Create_Ast_Expression(AST_Id);
+        struct_id.string_value := struct_name;
+        
+        stmt := Create_Ast_Statement(AST_Struct);
+        Set_Name(stmt, var_name);
+        Set_Expression(stmt, struct_id);
+        Add_Statement(block, stmt);
+    end Parse_Struct_Dec;
+    
     -- A helper function for parsing ID expressions
     -- TODO: See how we can condense this
     procedure Parse_Id is
@@ -356,6 +402,7 @@ begin
     while t.token_type /= T_End and t.token_type /= T_Eof loop
         case t.token_type is
             when T_Var => Parse_Var_Dec;
+            when T_Struct => Parse_Struct_Dec;
             when T_Id => Parse_Id;
             
             when T_While =>
