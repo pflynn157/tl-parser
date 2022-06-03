@@ -13,7 +13,7 @@ do
     
     EXPECTED=`cat $f`
     ACTUAL=`cat /tmp/$NAME`
-    diff -w $f /tmp/$NAME
+    diff -wB $f /tmp/$NAME
     
     if [[ $? == 0 ]] ; then
         echo "Pass"

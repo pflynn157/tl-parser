@@ -19,6 +19,22 @@ procedure unwrite_data_type(data_type : DataType);
 procedure unwrite(file : AstFile) is
     arg_index : Count_Type := 0;
 begin
+    -- Imports
+    if file.imports.Length > 0 then
+        for import of file.imports loop
+            Put("import ");
+            for c of To_String(import) loop
+                if c = '/' then
+                    Put(".");
+                else
+                    Put(c);
+                end if;
+            end loop;
+            Put_Line(";");
+        end loop;
+        New_Line;
+    end if;
+
     -- Global constants if they exist
     if file.consts.Length > 0 then
         for const of file.consts loop

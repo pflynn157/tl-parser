@@ -10,6 +10,7 @@ package AST is
         AST_None,
         
         -- Statements
+        AST_Import,
         AST_Var,
         AST_Struct,
         AST_Array,
@@ -148,12 +149,20 @@ package AST is
     package AstStructVector is new Ada.Containers.Vectors
         ( Index_Type => Natural,
           Element_Type => AstStruct);
+          
+    --
+    -- String list
+    --
+    package StringList is new Ada.Containers.Vectors
+        ( Index_Type => Natural,
+          Element_Type => Unbounded_String);
 
     --
     -- The file representation
     --
     type AstFile is record
         name : Unbounded_String;
+        imports : StringList.Vector;
         consts : AstStmtVector.Vector;      -- Only meant to hold constants
         structs : AstStructVector.Vector;
         funcs : AstFuncVector.Vector;

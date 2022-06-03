@@ -7,6 +7,7 @@ package Lex is
         T_Eof,
         
         -- Keywords
+        T_Import,
         T_Func,
         T_Is,
         T_End,

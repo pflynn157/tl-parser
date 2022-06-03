@@ -19,6 +19,7 @@ package AstExprStack is new Ada.Containers.Vectors
 --
 -- Forward declarations
 --
+procedure Parse_Import(file : in out AstFile);
 procedure Parse_Struct(file : in out AstFile);
 procedure Parse_Function(file : in out AstFile);
 procedure Parse_Block(block : in out AstBlock);
@@ -40,6 +41,7 @@ begin
     t := Lex_Get_Next;
     while t.token_type /= T_Eof loop
         case t.token_type is
+            when T_Import => Parse_Import(file);
             when T_Struct => Parse_Struct(file);
             when T_Func => Parse_Function(file);
             
@@ -59,6 +61,31 @@ begin
     Lex_Close;
     return file;
 end Parse;
+
+--
+-- The import parser
+--
+procedure Parse_Import(file : in out AstFile) is
+    t : Token;
+    path : Unbounded_String;
+begin
+    t := Lex_Get_Next;
+    while t.token_type /= T_SemiColon loop
+        case t.token_type is
+            when T_Id => Append(path, t.string_value);
+            when T_Dot => Append(path, "/");
+            
+            when others =>
+                Put_Line("Error: Invalid token in import.");
+                Put_Line(TokenType'Image(t.token_type));
+                return;
+        end case;
+        
+        t := Lex_Get_Next;
+    end loop;
+    
+    file.imports.Append(path);
+end Parse_Import;
 
 --
 -- The structure parser

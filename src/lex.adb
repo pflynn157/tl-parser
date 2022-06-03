@@ -162,7 +162,8 @@ function Lex_Get_Next return Token is
     -- A helper function to get the keyword based on the buffer
     procedure Get_Keyword is
     begin
-        if buffer = "func" then t.token_type := T_Func;
+        if buffer = "import" then t.token_type := T_Import;
+        elsif buffer = "func" then t.token_type := T_Func;
         elsif buffer = "is" then t.token_type := T_Is;
         elsif buffer = "end" then t.token_type := T_End;
         elsif buffer = "return" then t.token_type := T_Return;

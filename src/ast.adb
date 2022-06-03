@@ -257,6 +257,12 @@ procedure Print_Ast(file : AstFile) is
 begin
     Put_Line("FILE: " & To_String(file.name));
     New_Line;
+    if file.imports.Length > 0 then
+        for import of file.imports loop
+            Put_Line("import " & To_String(import) & ";");
+        end loop;
+        New_Line;
+    end if;
     if file.consts.Length > 0 then
         for stmt of file.consts loop
             Print(stmt);
