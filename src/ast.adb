@@ -18,34 +18,8 @@ begin
     return true;
 end Has_Expression;
 
-procedure Create_Binary_Op(op : in out AstExpression; lval, rval : AstExpression) is
-    lval_obj : AstExprObj := new AstExpression'(
-        ast_type => lval.ast_type,
-        lval => lval.lval,
-        rval => lval.rval,
-        int_value => lval.int_value,
-        string_value => lval.string_value,
-        char_value => lval.char_value,
-        list => lval.list,
-        list_size => lval.list_size
-    );
-    
-    rval_obj : AstExprObj := new AstExpression'(
-        ast_type => rval.ast_type,
-        lval => rval.lval,
-        rval => rval.rval,
-        int_value => rval.int_value,
-        string_value => rval.string_value,
-        char_value => rval.char_value,
-        list => rval.list,
-        list_size => rval.list_size
-    );
-begin
-    op.lval := lval_obj;
-    op.rval := rval_obj;
-end Create_Binary_Op;
-
-procedure Add_List_Item(op : in out AstExpression; item : AstExpression) is
+-- This function is local to the next two functions
+function Create_Expr_Obj(item : AstExpression) return AstExprObj is
     item_obj : AstExprObj := new AstExpression'(
         ast_type => item.ast_type,
         lval => item.lval,
@@ -56,6 +30,20 @@ procedure Add_List_Item(op : in out AstExpression; item : AstExpression) is
         list => item.list,
         list_size => item.list_size
     );
+begin
+    return item_obj;
+end Create_Expr_Obj;
+
+procedure Create_Binary_Op(op : in out AstExpression; lval, rval : AstExpression) is
+    lval_obj : AstExprObj := Create_Expr_Obj(lval);
+    rval_obj : AstExprObj := Create_Expr_Obj(rval);
+begin
+    op.lval := lval_obj;
+    op.rval := rval_obj;
+end Create_Binary_Op;
+
+procedure Add_List_Item(op : in out AstExpression; item : AstExpression) is
+    item_obj : AstExprObj := Create_Expr_Obj(item);
 begin
     op.list(op.list_size) := item_obj;
     op.list_size := op.list_size + 1;
