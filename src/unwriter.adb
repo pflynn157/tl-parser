@@ -110,6 +110,15 @@ begin
                 when others => null;
             end case;
             unwrite_expression(expr.rval.all);
+            
+        -- Expression list
+        when AST_Expr_List =>
+            for i in 0 .. (expr.list_size - 1) loop
+                unwrite_expression(expr.list(i).all);
+                if i < (expr.list_size - 1) then
+                    Put(", ");
+                end if;
+            end loop;
         
         -- Other
         when others => null;

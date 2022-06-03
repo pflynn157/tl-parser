@@ -44,7 +44,7 @@ function Lex_Get_Next return Token is
     begin
         case c is
             when '(' | ')' => return true;
-            when ';' | ':' | '=' => return true;
+            when ';' | ':' | ',' | '=' => return true;
             when '+' | '-' | '*' | '/' | '%' => return true;
             when '&' | '^' | '|' => return true;
             when '!' | '>' | '<' => return true;
@@ -72,6 +72,7 @@ function Lex_Get_Next return Token is
             when '(' => t.token_type := T_LParen;
             when ')' => t.token_type := T_RParen;
             when ';' => t.token_type := T_SemiColon;
+            when ',' => t.token_type := T_Comma;
             when '+' => t.token_type := T_Add;
             when '-' => t.token_type := T_Sub;
             when '*' => t.token_type := T_Mul;

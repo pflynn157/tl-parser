@@ -191,6 +191,10 @@ function Parse_Expression(end_token : TokenType) return AstExpression is
     expr : AstExpression;
     stack, op_stack : AstExprStack.Vector;
     
+    -- For lists
+    list_expr : AstExpression := Create_Ast_Expression(AST_Expr_List);
+    is_list : boolean := false;
+    
     procedure Process_Stack is
         lval, rval, op : AstExpression;
     begin
@@ -257,6 +261,14 @@ begin
             when T_Lt => op_stack.Append(Create_Ast_Expression(AST_Lt));
             when T_Le => op_stack.Append(Create_Ast_Expression(AST_Le));
             
+            -- Comma -> denotes a list
+            when T_Comma =>
+                is_list := true;
+                Process_Stack;
+                --list_expr.list(list_expr.list_size) := stack.Last_Element;
+                Add_List_Item(list_expr, stack.Last_Element);
+                stack.Delete_Last;
+            
             -- Unknown
             when others =>
                 Put_Line("Error: Invalid token in expression.");
@@ -267,6 +279,12 @@ begin
     end loop;
     
     Process_Stack;
+    
+    if is_list then
+        --list_expr.list(list_expr.list_size) := stack.Last_Element;
+        Add_List_Item(list_expr, stack.Last_Element);
+        return list_expr;
+    end if;
 
     if stack.Length = 0 then
         return Create_Ast_Expression(AST_None);

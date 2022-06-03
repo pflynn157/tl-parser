@@ -25,7 +25,9 @@ procedure Create_Binary_Op(op : in out AstExpression; lval, rval : AstExpression
         rval => lval.rval,
         int_value => lval.int_value,
         string_value => lval.string_value,
-        char_value => lval.char_value
+        char_value => lval.char_value,
+        list => lval.list,
+        list_size => lval.list_size
     );
     
     rval_obj : AstExprObj := new AstExpression'(
@@ -34,12 +36,30 @@ procedure Create_Binary_Op(op : in out AstExpression; lval, rval : AstExpression
         rval => rval.rval,
         int_value => rval.int_value,
         string_value => rval.string_value,
-        char_value => rval.char_value
+        char_value => rval.char_value,
+        list => rval.list,
+        list_size => rval.list_size
     );
 begin
     op.lval := lval_obj;
     op.rval := rval_obj;
 end Create_Binary_Op;
+
+procedure Add_List_Item(op : in out AstExpression; item : AstExpression) is
+    item_obj : AstExprObj := new AstExpression'(
+        ast_type => item.ast_type,
+        lval => item.lval,
+        rval => item.rval,
+        int_value => item.int_value,
+        string_value => item.string_value,
+        char_value => item.char_value,
+        list => item.list,
+        list_size => item.list_size
+    );
+begin
+    op.list(op.list_size) := item_obj;
+    op.list_size := op.list_size + 1;
+end Add_List_Item;
 
 procedure Set_Expression(stmt : in out AstStatement; expr : AstExpression) is
 begin
@@ -93,6 +113,16 @@ procedure Print_Ast(file : AstFile) is
             
             when AST_True => Put("TRUE");
             when AST_False => Put("FALSE");
+            
+            when AST_Expr_List =>
+                Put("{");
+                for i in 0 .. (expr.list_size - 1) loop
+                    Print(expr.list(i));
+                    if i < (expr.list_size - 1) then
+                        Put(", ");
+                    end if;
+                end loop;
+                Put("}");
             
             when AST_Assign |
                  AST_Add | AST_Sub | AST_Mul | AST_Div | AST_Mod |
@@ -190,6 +220,7 @@ function Create_Ast_Expression(ast_type : AstType) return AstExpression is
     expr : AstExpression;
 begin
     expr.ast_type := ast_type;
+    expr.list_size := 0;
     return expr;
 end Create_Ast_Expression;
 

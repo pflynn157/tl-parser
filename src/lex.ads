@@ -25,6 +25,7 @@ package Lex is
         T_LParen, T_RParen,
         T_SemiColon,
         T_Colon,
+        T_Comma,
         T_Assign,
         T_Add,
         T_Sub,
