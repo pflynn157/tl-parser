@@ -90,6 +90,17 @@ begin
     Self.funcs.Append(ast_func);
 end Add_Function;
 
+procedure Add_Struct(file : in out AstFile; struct : AstStruct) is
+begin
+    file.structs.Append(struct);
+end Add_Struct;
+
+procedure Add_Struct_Item(struct : in out AstStruct; name : Unbounded_String; data_type : DataType; expr : AstExpression) is
+    arg : AstArg := (name => name, data_type => data_type, expr => expr);
+begin
+    struct.args.Append(arg);
+end Add_Struct_Item;
+
 --
 -- The main debug function
 --
@@ -218,8 +229,24 @@ procedure Print_Ast(file : AstFile) is
         New_Line;
     end Print;
     
+    procedure Print(struct : AstStruct) is
+    begin
+        Put_Line("STRUCT " & To_String(struct.name) & " is");
+        for arg of struct.args loop
+            for i in 0 .. 4 loop Put(" "); end loop;
+            Put(To_String(arg.name) & " : " & DataType'Image(arg.data_type) & " := ");
+            Print(arg.expr);
+            Put_Line(";");
+        end loop;
+        Put_Line("end");
+    end Print;
+    
 begin
     Put_Line("FILE: " & To_String(file.name));
+    New_Line;
+    for struct of file.structs loop
+        Print(struct);
+    end loop;
     New_Line;
     for func of file.funcs loop
         Print(func);
@@ -237,6 +264,13 @@ begin
     file.name := To_Unbounded_String(name);
     return file;
 end Create_Ast_File;
+
+-- Creates a structure
+function Create_Ast_Struct(name : string) return AstStruct is
+    struct : AstStruct := (name => To_Unbounded_String(name), others => <>);
+begin
+    return struct;
+end Create_Ast_Struct;
 
 -- Creates an AST function
 function Create_Ast_Function(name : string; data_type : DataType := Void) return AstFunction is

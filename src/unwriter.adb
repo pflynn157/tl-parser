@@ -19,7 +19,21 @@ procedure unwrite_data_type(data_type : DataType);
 procedure unwrite(file : AstFile) is
     arg_index : Count_Type := 0;
 begin
-    -- Start with functions
+    -- Start with structures
+    for struct of file.structs loop
+        Put_Line("struct " & To_String(struct.name) & " is");
+        for arg of struct.args loop
+            for i in 0 .. 4 loop Put(" "); end loop;
+            Put(To_String(arg.name) & " : ");
+            unwrite_data_type(arg.data_type);
+            Put(" := ");
+            unwrite_expression(arg.expr);
+            Put_Line(";");
+        end loop;
+        Put_Line("end");
+    end loop;
+    
+    -- Now write functions
     for func of file.funcs loop
         Put("func " & To_String(func.name));
         if func.args.Length > 0 then

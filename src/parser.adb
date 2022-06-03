@@ -19,6 +19,7 @@ package AstExprStack is new Ada.Containers.Vectors
 --
 -- Forward declarations
 --
+procedure Parse_Struct(file : in out AstFile);
 procedure Parse_Function(file : in out AstFile);
 procedure Parse_Block(block : in out AstBlock);
 function Parse_Expression(end_token : TokenType) return AstExpression;
@@ -37,6 +38,7 @@ begin
     t := Lex_Get_Next;
     while t.token_type /= T_Eof loop
         case t.token_type is
+            when T_Struct => Parse_Struct(file);
             when T_Func => Parse_Function(file);
             
             when others =>
@@ -51,6 +53,78 @@ begin
     Lex_Close;
     return file;
 end Parse;
+
+--
+-- The structure parser
+--
+procedure Parse_Struct(file : in out AstFile) is
+    t : Token;
+    struct_name : Unbounded_String;
+    struct : AstStruct;
+    
+    -- For constructing items
+    item_name : Unbounded_String;
+    item_type : DataType;
+    item_expr : AstExpression;
+begin
+    -- Start with the structure name
+    t := Lex_Get_Next;
+    struct_name := t.string_value;
+    if t.token_type /= T_Id then
+        Put_Line("Error: Expected structure name.");
+        Put_Line(TokenType'Image(t.token_type));
+        return;
+    end if;
+    
+    -- Next token should be is
+    t := Lex_Get_Next;
+    if t.token_type /= T_Is then
+        Put_Line("Error: Expected is.");
+        Put_Line(TokenType'Image(t.token_type));
+        return;
+    end if;
+    
+    -- Create the AST element
+    struct := Create_Ast_Struct(To_String(struct_name));
+    
+    -- Parse the items
+    t := Lex_Get_Next;
+    while t.token_type /= T_End loop
+        item_name := t.string_value;
+        if t.token_type /= T_Id then
+            Put_Line("Error: Expected structure item name.");
+            Put_Line(TokenType'Image(t.token_type));
+            return;
+        end if;
+        
+        t := Lex_Get_Next;
+        if t.token_type /= T_Colon then
+            Put_Line("Error: Expected colon in structure item.");
+            Put_Line(TokenType'Image(t.token_type));
+            return;
+        end if;
+        
+        Parse_Data_Type(item_type);
+        
+        t := Lex_Get_Next;
+        if t.token_type /= T_Assign then
+            Put_Line("Error: Structure items require an initial value.");
+            Put_Line(TokenType'Image(t.token_type));
+            return;
+        end if;
+        
+        item_expr := Parse_Expression(T_SemiColon);
+        
+        -- Add the item
+        Add_Struct_Item(struct, item_name, item_type, item_expr);
+        
+        -- Move on
+        t := Lex_Get_Next;
+    end loop;
+    
+    -- Add to the file structure
+    Add_Struct(file, struct);
+end Parse_Struct;
 
 --
 -- The function parser

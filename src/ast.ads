@@ -112,6 +112,7 @@ package AST is
     type AstArg is record
         name : Unbounded_String;
         data_type : DataType := Void;
+        expr : AstExpression;
     end record;
     
     package AstArgVector is new Ada.Containers.Vectors
@@ -131,12 +132,25 @@ package AST is
     package AstFuncVector is new Ada.Containers.Vectors
         ( Index_Type => Natural,
           Element_Type => AstFunction);
+          
+    --
+    -- Structure representation
+    --
+    type AstStruct is record
+        name : Unbounded_String;
+        args : AstArgVector.Vector;
+    end record;
+    
+    package AstStructVector is new Ada.Containers.Vectors
+        ( Index_Type => Natural,
+          Element_Type => AstStruct);
 
     --
     -- The file representation
     --
     type AstFile is record
         name : Unbounded_String;
+        structs : AstStructVector.Vector;
         funcs : AstFuncVector.Vector;
     end record;
     
@@ -154,10 +168,13 @@ package AST is
     procedure Add_Statement(block : in out AstBlock; stmt : AstStatement);
     procedure Add_Statement(func : in out AstFunction; stmt : AstStatement);
     procedure Add_Function(Self: in out AstFile; ast_func : AstFunction);
+    procedure Add_Struct(file : in out AstFile; struct : AstStruct);
+    procedure Add_Struct_Item(struct : in out AstStruct; name : Unbounded_String; data_type : DataType; expr : AstExpression);
     procedure Print_Ast(file : AstFile);
     
     -- Helper functions
     function Create_Ast_File(name : string) return AstFile;
+    function Create_Ast_Struct(name : string) return AstStruct;
     function Create_Ast_Function(name : string; data_type : DataType := Void) return AstFunction;
     function Create_Ast_Statement(ast_type : AstType) return AstStatement;
     function Create_Ast_Expression(ast_type : AstType) return AstExpression;
