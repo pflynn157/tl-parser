@@ -164,6 +164,11 @@ begin
                     Put(", ");
                 end if;
             end loop;
+            
+        when AST_Call_Expr =>
+            Put(To_String(expr.string_value) & "(");
+            unwrite_expression(expr.sub_expr.all);
+            Put(")");
         
         -- Other
         when others => null;

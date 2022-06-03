@@ -129,6 +129,11 @@ procedure Print_Ast(file : AstFile) is
                     end if;
                 end loop;
                 Put("}");
+                
+            when AST_Call_Expr =>
+                Put(To_String(expr.string_value) & "(");
+                Print(expr.sub_expr);
+                Put(")");
             
             when AST_Assign |
                  AST_Add | AST_Sub | AST_Mul | AST_Div | AST_Mod |

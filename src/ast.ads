@@ -20,6 +20,7 @@ package AST is
         
         -- Expressions
         AST_Expr_List,
+        AST_Call_Expr,
         
         -- Operators
         AST_Assign,

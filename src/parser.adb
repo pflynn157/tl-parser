@@ -289,7 +289,7 @@ end Parse_Block;
 --
 function Parse_Expression(end_token : TokenType) return AstExpression is
     t : Token;
-    expr : AstExpression;
+    expr, sub_expr : AstExpression;
     stack, op_stack : AstExprStack.Vector;
     
     -- For lists
@@ -336,13 +336,41 @@ begin
                 expr.char_value := t.char_value;
                 stack.Append(expr);
                 
-            when T_Id =>
-                expr := Create_Ast_Expression(AST_Id);
-                expr.string_value := t.string_value;
-                stack.Append(expr);
-                
             when T_True => stack.Append(Create_Ast_Expression(AST_True));
             when T_False => stack.append(Create_Ast_Expression(AST_False));
+                
+            -- TODO: Should probably go in a separate function
+            when T_Id =>
+                declare
+                    name : Unbounded_String := t.string_value;
+                begin
+                    t := Lex_Get_Next;
+                    if t.token_type = T_LParen then
+                        expr := Create_Ast_Expression(AST_Call_Expr);
+                        expr.string_value := name;
+                        
+                        sub_expr := Parse_Expression(T_RParen);
+                        Set_Sub_Expr(expr, sub_expr);
+                        
+                        stack.Append(expr);
+                        
+                    elsif t.token_type = T_LBracket then
+                        expr := Create_Ast_Expression(AST_Array_Acc);
+                        expr.string_value := name;
+                        
+                        sub_expr := Parse_Expression(T_RBracket);
+                        Set_Sub_Expr(expr, sub_expr);
+                        
+                        stack.Append(expr);
+                        
+                    else
+                        Lex_Unget(t);
+                        
+                        expr := Create_Ast_Expression(AST_Id);
+                        expr.string_value := name;
+                        stack.Append(expr);
+                    end if;
+                end;
                 
             -- Operators
             when T_Assign => op_stack.Append(Create_Ast_Expression(AST_Assign));
