@@ -38,6 +38,7 @@ package AST is
         
         -- Literals
         AST_Id,
+        AST_Array_Acc,
         AST_Int,
         AST_String,
         AST_Char,
@@ -64,6 +65,7 @@ package AST is
     type AstExpression is record
         ast_type : AstType := AST_None;
         lval, rval : AstExprObj;
+        sub_expr : AstExprObj;
         
         int_value : integer := 0;
         string_value : Unbounded_String;
@@ -127,6 +129,7 @@ package AST is
     --
     function Has_Expression(stmt : AstStatement) return boolean;
     procedure Create_Binary_Op(op : in out AstExpression; lval, rval : AstExpression);
+    procedure Set_Sub_Expr(op : in out AstExpression; expr : AstExpression);
     procedure Add_List_Item(op : in out AstExpression; item : AstExpression);
     procedure Set_Expression(stmt : in out AstStatement; expr : AstExpression);
     procedure Set_Name(stmt : in out AstStatement; name : Unbounded_String);

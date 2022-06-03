@@ -118,6 +118,11 @@ begin
         when AST_Char => Put("'" & expr.char_value & "'");
         when AST_Id => Put(To_String(expr.string_value));
         
+        when AST_Array_Acc =>
+            Put(To_String(expr.string_value) & "[");
+            unwrite_expression(expr.sub_expr.all);
+            Put("]");
+        
         when AST_True => Put("true");
         when AST_False => Put("false");
         

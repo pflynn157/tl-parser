@@ -24,6 +24,7 @@ function Create_Expr_Obj(item : AstExpression) return AstExprObj is
         ast_type => item.ast_type,
         lval => item.lval,
         rval => item.rval,
+        sub_expr => item.sub_expr,
         int_value => item.int_value,
         string_value => item.string_value,
         char_value => item.char_value,
@@ -41,6 +42,11 @@ begin
     op.lval := lval_obj;
     op.rval := rval_obj;
 end Create_Binary_Op;
+
+procedure Set_Sub_Expr(op : in out AstExpression; expr : AstExpression) is
+begin
+    op.sub_expr := Create_Expr_Obj(expr);
+end Set_Sub_Expr;
 
 procedure Add_List_Item(op : in out AstExpression; item : AstExpression) is
     item_obj : AstExprObj := Create_Expr_Obj(item);
@@ -105,6 +111,11 @@ procedure Print_Ast(file : AstFile) is
             when AST_String => Put('"' & To_String(expr.string_value) & '"');
             when AST_Char => Put("CHAR(" & expr.char_value & ")");
             when AST_Id => Put(To_String(expr.string_value));
+            
+            when AST_Array_Acc =>
+                Put(To_String(expr.string_value) & "[");
+                Print(expr.sub_expr);
+                Put("]");
             
             when AST_True => Put("TRUE");
             when AST_False => Put("FALSE");

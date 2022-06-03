@@ -164,9 +164,10 @@ procedure Parse_Block(block : in out AstBlock) is
     end Parse_Var_Dec;
     
     -- A helper function for parsing ID expressions
+    -- TODO: See how we can condense this
     procedure Parse_Id is
         name : Unbounded_String := t.string_value;
-        lval : AstExpression;
+        lval, sub_expr : AstExpression;
     begin
         t := Lex_Get_Next;
         if t.token_type = T_LParen then
@@ -189,6 +190,21 @@ procedure Parse_Block(block : in out AstBlock) is
             
             lval := Create_Ast_Expression(AST_Id);
             lval.string_value := name;
+            Create_Binary_Op(expr, lval, expr.rval.all);
+            
+            -- Create the statement
+            stmt := Create_Ast_Statement(AST_Expr_Stmt);
+            Set_Name(stmt, name);
+            Set_Expression(stmt, expr);
+            Add_Statement(block, stmt);
+        elsif t.token_type = T_LBracket then
+            sub_expr := Parse_Expression(T_RBracket);
+            
+            expr := Parse_Expression(T_SemiColon);
+            
+            lval := Create_Ast_Expression(AST_Array_Acc);
+            lval.string_value := name;
+            Set_Sub_Expr(lval, sub_expr);
             Create_Binary_Op(expr, lval, expr.rval.all);
             
             -- Create the statement
