@@ -166,6 +166,7 @@ procedure Parse_Block(block : in out AstBlock) is
     -- A helper function for parsing ID expressions
     procedure Parse_Id is
         name : Unbounded_String := t.string_value;
+        lval : AstExpression;
     begin
         t := Lex_Get_Next;
         if t.token_type = T_LParen then
@@ -181,6 +182,20 @@ procedure Parse_Block(block : in out AstBlock) is
                 Put_Line(TokenType'Image(t.token_type));
                 return;
             end if;
+        elsif t.token_type = T_Assign then
+            Lex_Unget(t);
+            
+            expr := Parse_Expression(T_SemiColon);
+            
+            lval := Create_Ast_Expression(AST_Id);
+            lval.string_value := name;
+            Create_Binary_Op(expr, lval, expr.rval.all);
+            
+            -- Create the statement
+            stmt := Create_Ast_Statement(AST_Expr_Stmt);
+            Set_Name(stmt, name);
+            Set_Expression(stmt, expr);
+            Add_Statement(block, stmt);
         else
             Put_Line("Error: Invalid token following ID.");
             Put_Line(TokenType'Image(t.token_type));

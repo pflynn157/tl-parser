@@ -73,6 +73,10 @@ begin
             end if;
             Put_Line(";");
             
+        when AST_Expr_Stmt =>
+            unwrite_expression(stmt.expr);
+            Put_Line(";");
+            
         when AST_While =>
             Put("while ");
             unwrite_expression(stmt.expr);
