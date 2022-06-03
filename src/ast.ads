@@ -37,6 +37,7 @@ package AST is
         AST_Eq, AST_Ne,
         AST_Gt, AST_Ge,
         AST_Lt, AST_Le,
+        AST_Lg_And, AST_Lg_Or,
         
         -- Literals
         AST_Id,

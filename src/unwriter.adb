@@ -177,7 +177,8 @@ begin
         when AST_Assign |
              AST_Add | AST_Sub | AST_Mul | AST_Div | AST_Mod |
              AST_And | AST_Or | AST_Xor |
-             AST_Eq | AST_Ne | AST_Gt | AST_Ge | AST_Lt | AST_Le =>
+             AST_Eq | AST_Ne | AST_Gt | AST_Ge | AST_Lt | AST_Le |
+             AST_Lg_And | AST_Lg_Or =>
             if print_lval then
                 unwrite_expression(expr.lval.all);
             end if;
@@ -198,6 +199,9 @@ begin
                 when AST_Ge => Put(" >= ");
                 when AST_Lt => Put(" < ");
                 when AST_Le => Put(" <= ");
+                
+                when AST_Lg_And => Put(" && ");
+                when AST_Lg_Or => Put(" || ");
                 
                 when others => null;
             end case;

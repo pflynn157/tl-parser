@@ -606,6 +606,9 @@ begin
             when T_Lt => op_stack.Append(Create_Ast_Expression(AST_Lt));
             when T_Le => op_stack.Append(Create_Ast_Expression(AST_Le));
             
+            when T_Lg_And => op_stack.Append(Create_Ast_Expression(AST_Lg_And));
+            when T_Lg_Or => op_stack.Append(Create_Ast_Expression(AST_Lg_Or));
+            
             -- Comma -> denotes a list
             when T_Comma =>
                 is_list := true;

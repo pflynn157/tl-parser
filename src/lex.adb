@@ -89,8 +89,6 @@ function Lex_Get_Next return Token is
             when '*' => t.token_type := T_Mul;
             when '/' => t.token_type := T_Div;
             when '%' => t.token_type := T_Mod;
-            when '&' => t.token_type := T_And;
-            when '|' => t.token_type := T_Or;
             when '^' => t.token_type := T_Xor;
             when '=' => t.token_type := T_Eq;
             
@@ -137,6 +135,24 @@ function Lex_Get_Next return Token is
                     t.token_type := T_Le;
                 else
                     t.token_type := T_Lt;
+                end if;
+                
+            when '&' =>
+                Look_Ahead(F, c2, eol);
+                if c2 = '&' then
+                    Get_Immediate(F, c);
+                    t.token_type := T_Lg_And;
+                else
+                    t.token_type := T_And;
+                end if;
+            
+            when '|' =>
+                Look_Ahead(F, c2, eol);
+                if c2 = '|' then
+                    Get_Immediate(F, c);
+                    t.token_type := T_Lg_Or;
+                else
+                    t.token_type := T_Or;
                 end if;
             
             when others => null;
