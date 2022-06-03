@@ -1,6 +1,6 @@
 FILE: test/parser/005.tl
 
-FUNC main is
+FUNC main -> VOID is
    AST_VAR x1 I8 (x1 := 1)
    AST_VAR x2 U8 (x2 := 2)
    AST_VAR x3 I16 (x3 := 3)

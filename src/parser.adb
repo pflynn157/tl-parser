@@ -59,6 +59,7 @@ procedure Parse_Function(file : in out AstFile) is
     t : Token;
     func_name : Unbounded_String;
     func : AstFunction;
+    data_type : DataType := Void;
 begin
     -- Start with the function name
     t := Lex_Get_Next;
@@ -69,11 +70,18 @@ begin
         return;
     end if;
     
+    t := Lex_Get_Next;
+    
     -- Arguments
     -- TODO
     
+    -- Return type
+    if t.token_type = T_Arrow then
+        Parse_Data_Type(data_type);
+        t := Lex_Get_Next;
+    end if;
+    
     -- Next token should be "is"
-    t := Lex_Get_Next;
     if t.token_type /= T_Is then
         Put_Line("Error: Expected is.");
         Put_Line(TokenType'Image(t.token_type));
@@ -81,7 +89,7 @@ begin
     end if;
     
     -- Construct the AST function and build the block
-    func := Create_Ast_Function(To_String(func_name));
+    func := Create_Ast_Function(To_String(func_name), data_type);
     Parse_Block(func.block);
     Add_Function(file, func);
 end Parse_Function;

@@ -19,7 +19,13 @@ procedure unwrite(file : AstFile) is
 begin
     -- Start with functions
     for func of file.funcs loop
-        Put_Line("func " & To_String(func.name) & " is");
+        Put("func " & To_String(func.name) & " ");
+        if func.data_type /= Void then
+            Put("-> ");
+            unwrite_data_type(func.data_type);
+            Put(" ");
+        end if;
+        Put_Line("is");
         unwrite_block(func.block);
         Put_Line("end");
     end loop;

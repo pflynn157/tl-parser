@@ -1,6 +1,6 @@
 FILE: test/parser/017.tl
 
-FUNC main is
+FUNC main -> VOID is
    AST_VAR x1 I32 (x1 := n[2])
    AST_VAR y1 I32 (y1 := n[i])
    AST_VAR z1 I32 (z1 := n[(i * 2)])

@@ -110,6 +110,7 @@ package AST is
     --
     type AstFunction is record
         name : Unbounded_String;
+        data_type : DataType := Void;
         block : AstBlock;
     end record;
 
@@ -143,7 +144,7 @@ package AST is
     
     -- Helper functions
     function Create_Ast_File(name : string) return AstFile;
-    function Create_Ast_Function(name : string) return AstFunction;
+    function Create_Ast_Function(name : string; data_type : DataType := Void) return AstFunction;
     function Create_Ast_Statement(ast_type : AstType) return AstStatement;
     function Create_Ast_Expression(ast_type : AstType) return AstExpression;
 

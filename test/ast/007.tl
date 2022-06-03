@@ -1,6 +1,6 @@
 FILE: test/parser/007.tl
 
-FUNC main is
+FUNC main -> VOID is
    AST_VAR x I32 (x := 20)
    AST_VAR y1 I32 (y1 := (x + 30))
    AST_VAR y2 I32 (y2 := (x - 40))

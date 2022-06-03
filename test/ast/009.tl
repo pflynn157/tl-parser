@@ -1,6 +1,6 @@
 FILE: test/parser/009.tl
 
-FUNC main is
+FUNC main -> VOID is
    AST_CALL_STMT print VOID 
    AST_CALL_STMT print VOID 1
    AST_CALL_STMT print VOID {1, 2}

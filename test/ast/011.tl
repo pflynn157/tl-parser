@@ -1,6 +1,6 @@
 FILE: test/parser/011.tl
 
-FUNC main is
+FUNC main -> VOID is
    AST_IF  VOID (x < 10)
        AST_CALL_STMT println VOID "Hello!"
    AST_ELIF  VOID (x < 20)

@@ -1,6 +1,6 @@
 FILE: test/parser/001.tl
 
-FUNC main is
+FUNC main -> VOID is
    AST_CALL_STMT println VOID "Hello!"
 end
 

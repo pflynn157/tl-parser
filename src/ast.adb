@@ -199,7 +199,7 @@ procedure Print_Ast(file : AstFile) is
     
     procedure Print(func : AstFunction) is
     begin
-        Put_Line("FUNC " & To_String(func.name) & " is");
+        Put_Line("FUNC " & To_String(func.name) & " -> " & DataType'Image(func.data_type) & " is");
         Print(func.block, 2);
         Put_Line("end");
         New_Line;
@@ -226,10 +226,11 @@ begin
 end Create_Ast_File;
 
 -- Creates an AST function
-function Create_Ast_Function(name : string) return AstFunction is
+function Create_Ast_Function(name : string; data_type : DataType := Void) return AstFunction is
     func : AstFunction;
 begin
     func.name := To_Unbounded_String(name);
+    func.data_type := data_type;
     return func;
 end Create_Ast_Function;
 
