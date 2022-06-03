@@ -53,7 +53,7 @@ function Lex_Get_Next return Token is
         case c is
             when '(' | ')' => return true;
             when '[' | ']' => return true;
-            when ';' | ':' | ',' | '=' => return true;
+            when ';' | ':' | ',' | '.' | '=' => return true;
             when '+' | '-' | '*' | '/' | '%' => return true;
             when '&' | '^' | '|' => return true;
             when '!' | '>' | '<' => return true;
@@ -84,6 +84,7 @@ function Lex_Get_Next return Token is
             when ']' => t.token_type := T_RBracket;
             when ';' => t.token_type := T_SemiColon;
             when ',' => t.token_type := T_Comma;
+            when '.' => t.token_type := T_Dot;
             when '+' => t.token_type := T_Add;
             when '*' => t.token_type := T_Mul;
             when '/' => t.token_type := T_Div;

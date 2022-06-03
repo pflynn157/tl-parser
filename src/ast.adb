@@ -127,6 +127,11 @@ procedure Print_Ast(file : AstFile) is
                 Put(To_String(expr.string_value) & "[");
                 Print(expr.sub_expr);
                 Put("]");
+                
+            when AST_Struct_Acc =>
+                Put("STRUCT(" & To_String(expr.string_value) & ".");
+                Print(expr.sub_expr);
+                Put(")");
             
             when AST_True => Put("TRUE");
             when AST_False => Put("FALSE");

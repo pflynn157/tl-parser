@@ -344,6 +344,7 @@ procedure Parse_Block(block : in out AstBlock) is
                 Put_Line(TokenType'Image(t.token_type));
                 return;
             end if;
+            
         elsif t.token_type = T_Assign then
             Lex_Unget(t);
             
@@ -358,6 +359,7 @@ procedure Parse_Block(block : in out AstBlock) is
             Set_Name(stmt, name);
             Set_Expression(stmt, expr);
             Add_Statement(block, stmt);
+            
         elsif t.token_type = T_LBracket then
             sub_expr := Parse_Expression(T_RBracket);
             
@@ -373,6 +375,32 @@ procedure Parse_Block(block : in out AstBlock) is
             Set_Name(stmt, name);
             Set_Expression(stmt, expr);
             Add_Statement(block, stmt);
+            
+        elsif t.token_type = T_Dot then
+            -- Create the lval
+            lval := Create_Ast_Expression(AST_Struct_Acc);
+            lval.string_value := name;
+            
+            t := Lex_Get_Next;
+            if t.token_type /= T_Id then
+                Put_Line("Error: Invalid token following structure reference.");
+                Put_Line(TokenType'Image(t.token_type));
+            end if;
+            
+            sub_expr := Create_Ast_Expression(AST_Id);
+            sub_expr.string_value := t.string_value;
+            Set_Sub_Expr(lval, sub_expr);
+            
+            -- Create the structure
+            expr := Parse_Expression(T_SemiColon);
+            Create_Binary_Op(expr, lval, expr.rval.all);
+            
+            -- Create the statement
+            stmt := Create_Ast_Statement(AST_Expr_Stmt);
+            Set_Name(stmt, name);
+            Set_Expression(stmt, expr);
+            Add_Statement(block, stmt);
+            
         else
             Put_Line("Error: Invalid token following ID.");
             Put_Line(TokenType'Image(t.token_type));
@@ -535,7 +563,22 @@ begin
                         Set_Sub_Expr(expr, sub_expr);
                         
                         stack.Append(expr);
+                       
+                    elsif t.token_type = T_Dot then
+                        expr := Create_Ast_Expression(AST_Struct_Acc);
+                        expr.string_value := name;
                         
+                        t := Lex_Get_Next;
+                        if t.token_type /= T_Id then
+                            Put_Line("Error: Invalid token following structure reference.");
+                            Put_Line(TokenType'Image(t.token_type));
+                        end if;
+                        
+                        sub_expr := Create_Ast_Expression(AST_Id);
+                        sub_expr.string_value := t.string_value;
+                        Set_Sub_Expr(expr, sub_expr);
+                        stack.Append(expr);
+                     
                     else
                         Lex_Unget(t);
                         

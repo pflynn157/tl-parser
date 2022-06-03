@@ -41,6 +41,7 @@ package AST is
         -- Literals
         AST_Id,
         AST_Array_Acc,
+        AST_Struct_Acc,
         AST_Int,
         AST_String,
         AST_Char,

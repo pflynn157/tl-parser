@@ -32,6 +32,7 @@ package Lex is
         T_SemiColon,
         T_Colon,
         T_Comma,
+        T_Dot,
         T_Arrow,
         T_Assign,
         T_Add,
